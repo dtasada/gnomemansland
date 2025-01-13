@@ -1,5 +1,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_net.h>
+#include <iostream>
+
+int exit_failure(std::string message) {
+    std::cerr << message << ": " << SDLNet_GetError() << std::endl;
+    SDL_Quit();
+    return EXIT_FAILURE;
+}
 
 int main(int argc, char **argv) {
     IPaddress ip; /* Server address */
@@ -13,22 +20,16 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    if (SDLNet_Init() < 0) {
-        fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
-        exit(EXIT_FAILURE);
-    }
+    if (SDLNet_Init() < 0)
+        exit_failure("SDLNet_Init");
 
     /* Resolve the host we are connecting to */
-    if (SDLNet_ResolveHost(&ip, argv[1], atoi(argv[2])) < 0) {
-        fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
-        exit(EXIT_FAILURE);
-    }
+    if (SDLNet_ResolveHost(&ip, argv[1], atoi(argv[2])) < 0)
+        exit_failure("SDLNet_ResolveHost");
 
     /* Open a connection with the IP provided (listen on the host's port) */
-    if (!(sd = SDLNet_TCP_Open(&ip))) {
-        fprintf(stderr, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
-        exit(EXIT_FAILURE);
-    }
+    if (!(sd = SDLNet_TCP_Open(&ip)))
+        exit_failure("SDLNet_TCP_Open");
 
     /* Send messages */
     quit = 0;

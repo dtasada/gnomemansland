@@ -32,8 +32,8 @@ int main(int argc, char **argv) {
          * If there is one, accept that, and open a new socket for communicating
          */
         if ((csd = SDLNet_TCP_Accept(sd))) {
-            /* Now we can communicate with the client using csd socket * sd will
-               remain opened waiting other connections */
+            /* Now we can communicate with the client using csd socket
+             * sd will remain opened waiting other connections */
 
             /* Get the remote address */
             if ((remoteIP = SDLNet_TCP_GetPeerAddress(csd)))

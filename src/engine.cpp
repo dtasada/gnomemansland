@@ -1,12 +1,16 @@
 #include "../include/engine.hpp"
 #include "../include/world.hpp"
+#ifdef __linux
 #include <SDL2/SDL_image.h>
+#elif __APPLE__
+#include <SDL_image.h>
+#endif
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <cstddef>
 #include <iostream>
 
-Game::Game() : world({30, 30}), running(true), fps(60.0f) {
+Game::Game() : running(true), fps(60.0f), world({30, 30}), client() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
         exit_failure("Failed to initialize SDL");
 

@@ -6,7 +6,7 @@
 #include <SDL2/SDL_render.h>
 #include <vector>
 
-struct World {
+class World {
     v2 size;
     std::vector<std::vector<int>> map_data;
 
