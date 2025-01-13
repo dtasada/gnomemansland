@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.absml": "toml",
+        "format": "cpp",
+        "iosfwd": "cpp",
+        "vector": "cpp",
+        "new": "cpp",
+        "iostream": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}
