@@ -1,5 +1,5 @@
 # Build process
-* ```sh
+```sh
 mkdir build # Create build folder
 cd build
 cmake .. # Generate Makefile. Only necessary the first time, or after changing the build process in CMakeLists.txt

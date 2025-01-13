@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_error.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
@@ -7,30 +8,26 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <string>
+
+int exit_failure(std::string message) {
+    std::cerr << message << ": " << SDL_GetError() << std::endl;
+    SDL_Quit();
+    return EXIT_FAILURE;
+}
 
 int main() {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
-        std::cerr << "Failed to initialize SDL" << SDL_GetError() << std::endl;
-        SDL_Quit();
-        std::exit(EXIT_FAILURE);
-    };
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
+        exit_failure("Failed to initialize SDL");
 
     SDL_Window *window = SDL_CreateWindow(
         "PO6", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, 0);
-    if (!window) {
-        std::cerr << "Failed to create SDL Window" << SDL_GetError()
-                  << std::endl;
-        SDL_Quit();
-        std::exit(EXIT_FAILURE);
-    }
+    if (!window)
+        exit_failure("Failed to create SDL Window");
     SDL_Renderer *renderer =
         SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        std::cerr << "Failed to create SDL Renderer" << SDL_GetError()
-                  << std::endl;
-        SDL_Quit();
-        std::exit(EXIT_FAILURE);
-    }
+    if (!renderer)
+        exit_failure("Failed to create SDL Renderer");
 
     bool running = true;
     SDL_Rect rect = {0, 0, 100, 100};
