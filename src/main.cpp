@@ -5,7 +5,6 @@
 #include <SDL2/SDL_scancode.h>
 #include <cstdint>
 #include <cstdlib>
-#include <vector>
 
 #include "../include/engine.hpp"
 
@@ -29,6 +28,7 @@ int main() {
 
         if (scancodes[SDL_SCANCODE_ESCAPE])
             game->running = false;
+
         if (scancodes[SDL_SCANCODE_W])
             p1.rect.y -= 10;
         if (scancodes[SDL_SCANCODE_S])
@@ -37,6 +37,15 @@ int main() {
             p1.rect.x -= 10;
         if (scancodes[SDL_SCANCODE_D])
             p1.rect.x += 10;
+
+        if (scancodes[SDL_SCANCODE_UP])
+            p2.rect.y -= 10;
+        if (scancodes[SDL_SCANCODE_DOWN])
+            p2.rect.y += 10;
+        if (scancodes[SDL_SCANCODE_LEFT])
+            p2.rect.x -= 10;
+        if (scancodes[SDL_SCANCODE_RIGHT])
+            p2.rect.x += 10;
 
         SDL_Delay(1000.0f / game->fps);
 

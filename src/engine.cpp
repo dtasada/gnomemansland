@@ -1,11 +1,12 @@
 #include "../include/engine.hpp"
+#include "../include/world.hpp"
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <cstddef>
 #include <iostream>
 
-Game::Game() {
+Game::Game() : world({30, 30}), running(true), fps(60.0f) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
         exit_failure("Failed to initialize SDL");
 
@@ -15,8 +16,6 @@ Game::Game() {
 
     if (!(renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)))
         exit_failure("Failed to create SDL Renderer");
-
-    running = true;
 }
 
 Game::~Game() {

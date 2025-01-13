@@ -1,4 +1,5 @@
 #include "../include/v2.hpp"
+#include "../include/world.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_rect.h>
@@ -11,6 +12,8 @@ struct Game {
     float fps;
     float dt;
     bool running;
+
+    World world;
 
     Game();
     ~Game();
