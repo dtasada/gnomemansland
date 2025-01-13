@@ -4,7 +4,8 @@ project(PO6)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "-std=c++23 -Wall -Wextra -O3 ")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(SOURCES src/main.cpp)
+FILE(GLOB SRC src/*.cpp)
+set(SOURCES ${SRC})
 
 add_executable(po6 ${SOURCES})
 
