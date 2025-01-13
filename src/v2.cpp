@@ -1,5 +1,4 @@
 #include "../include/v2.hpp"
-#include <format>
 
 v2::v2(float x, float y) : x(x), y(y) {};
 v2::v2(float v) : x(v), y(v) {};
@@ -29,9 +28,5 @@ bool v2::operator==(const v2 &rhs) const { return x == rhs.x && y == rhs.y; }
 bool v2::operator!=(const v2 &rhs) const { return !(*this == rhs); }
 
 v2::operator float *() const { return new float[3]{x, y}; }
-
-std::string v2::to_string() const {
-    return std::format("v2({:.1f}, {:.1f})", x, y);
-}
 
 float v2::volume() const { return x * y; };

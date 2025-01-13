@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 
 struct v2 {
     float x, y;
@@ -30,8 +29,6 @@ struct v2 {
 
     bool operator==(const v2 &other) const;
     bool operator!=(const v2 &other) const;
-
-    std::string to_string(void) const;
 
     explicit operator float *() const;
 
