@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.31)
+
+project(PO6)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "-std=c++23 -Wall -Wextra -O3 ")
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+set(SOURCES src/main.cpp)
+add_executable(po6 ${SOURCES})
+
+if(UNIX)
+    message("This is a ${CMAKE_SYSTEM_NAME} system")
+elseif(WIN32)
+    message("This is a Windows System")
+elseif(APPLE)
+	message("This is an Apple System")
+endif()
+
+if(${CMAKE_SYSTEM_NAME} MATCHES Darwin)
+    message("This is a ${CMAKE_SYSTEM_NAME} system")
+elseif(${CMAKE_SYSTEM_NAME} MATCHES Windows)
+    message("This is a Windows System")
+endif()
+
+find_package(SDL2)# Check for libray, if found print message, include dirs and link libraries.
+if(SDL2_FOUND)
+	message("SDL2 Found")
+	include_directories(${SDL2_INCLUDE_DIRS})
+	target_link_libraries(po6 ${SDL2_LIBRARIES})
+elseif(NOT Boost_FOUND)
+	error("SDL2 Not Found")
+endif()
