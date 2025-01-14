@@ -9,3 +9,4 @@
 #endif
 
 int randint(int min, int max);
+int rand01();

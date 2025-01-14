@@ -7,7 +7,7 @@
 #include <iostream>
 
 Game::Game(bool should_multiplayer)
-    : fps(60.0f), running(true), world({30, 30}),
+    : fps(60.0f), running(true), world({200, 200}),
       client("127.0.0.1", 2000, should_multiplayer) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
         exit_failure("Failed to initialize SDL");

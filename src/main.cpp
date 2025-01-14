@@ -58,7 +58,7 @@ int main() {
         p1.copy(game->renderer);
         p2.copy(game->renderer);
 
-        game->world.update();
+        game->world.update(game->renderer);
 
         SDL_RenderPresent(game->renderer);
     }

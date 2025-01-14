@@ -6,15 +6,18 @@
 #include <SDL2/SDL_render.h>
 #include <vector>
 
-#define TILE_SIZE 30
+#define TILE_SIZE 5
+
+enum class Tile {DEEP_WATER, WATER, SAND, GRASS};
 
 class World {
   public:
     v2 size;
-    std::vector<std::vector<int>> map_data;
+    std::vector<std::vector<Tile>> map_data;
+    double z;
 
     World(v2 size);
 
-    void draw();
-    void update();
+    void draw(SDL_Renderer *renderer);
+    void update(SDL_Renderer *renderer);
 };
