@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.absml": "toml",
+        "algorithm": "cpp",
+        "iostream": "cpp",
+        "vector": "cpp"
+    }
+}
