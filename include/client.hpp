@@ -3,6 +3,8 @@
 #include <string>
 
 class Client {
+    bool connected;
+
     std::string host;
     uint16_t port;
 
@@ -10,9 +12,10 @@ class Client {
     TCPsocket socket;
 
     void exit_failure(std::string message);
-    void send(std::string message);
 
   public:
     Client(std::string host, uint16_t port);
     ~Client();
+
+    void send(std::string message);
 };

@@ -10,6 +10,7 @@ class World {
     v2 size;
     std::vector<std::vector<int>> map_data;
 
+  public:
     World(v2 size);
 
     void draw();
