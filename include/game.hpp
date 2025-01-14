@@ -1,10 +1,12 @@
-#include "../include/v2.hpp"
-#include "../include/world.hpp"
 #include <SDL2/SDL.h>
-#include <SDL_image.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <string>
+
+#include "../include/client.hpp"
+#include "../include/engine.hpp"
+#include "../include/v2.hpp"
+#include "../include/world.hpp"
 
 struct Game {
     SDL_Window *window;
@@ -14,6 +16,7 @@ struct Game {
     bool running;
 
     World world;
+    Client client;
 
     Game();
     ~Game();

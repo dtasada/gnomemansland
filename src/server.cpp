@@ -1,6 +1,5 @@
+#include "../include/engine.hpp"
 #include "../include/server.hpp"
-#include <SDL2/SDL.h>
-#include <SDL_net.h>
 #include <algorithm>
 #include <iostream>
 
@@ -110,10 +109,4 @@ void Server::listen() {
     }
 
     SDLNet_FreeSocketSet(socket_set);
-}
-
-int main() {
-    Server server(1234);
-    server.listen();
-    return 0;
 }

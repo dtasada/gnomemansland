@@ -8,7 +8,8 @@
 
 #define TILE_SIZE 30
 
-struct World {
+class World {
+  public:
     v2 size;
     std::vector<std::vector<int>> map_data;
 

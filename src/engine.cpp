@@ -1,6 +1,6 @@
 #include "../include/engine.hpp"
-#include <random>
 #include <iostream>
+#include <random>
 
 int randint(int a, int b) {
     std::random_device rd;
