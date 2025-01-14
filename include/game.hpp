@@ -18,7 +18,7 @@ struct Game {
     World world;
     Client client;
 
-    Game();
+    Game(bool multiplayer);
     ~Game();
 };
 

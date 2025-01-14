@@ -9,22 +9,22 @@
 #include "../include/game.hpp"
 
 int main() {
-    Game* game = new Game();
+    Game *game = new Game(false);
 
     Sprite p1(game->renderer, "../resources/grass.png", {0, 0, 100, 100});
     Sprite p2(game->renderer, "../resources/grass.png", {0, 200, 200, 200});
 
     SDL_Event event;
-    const uint8_t* scancodes = SDL_GetKeyboardState(NULL);
+    const uint8_t *scancodes = SDL_GetKeyboardState(NULL);
 
     while (game->running) {
         SDL_PollEvent(&event);
         SDL_PumpEvents();
 
         switch (event.type) {
-            case SDL_QUIT:
-                game->running = false;
-                break;
+        case SDL_QUIT:
+            game->running = false;
+            break;
         }
 
         if (scancodes[SDL_SCANCODE_ESCAPE])
