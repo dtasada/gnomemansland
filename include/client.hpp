@@ -1,5 +1,4 @@
 #include "../include/engine.hpp"
-
 #include <sqlite3.h>
 #include <string>
 
@@ -15,7 +14,7 @@ class Client {
     void exit_failure(std::string message);
 
   public:
-    Client(std::string host, uint16_t port);
+    Client(std::string host, uint16_t port, bool on_by_default);
     ~Client();
 
     void send(std::string message);

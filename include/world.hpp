@@ -9,10 +9,10 @@
 #define TILE_SIZE 30
 
 class World {
+  public:
     v2 size;
     std::vector<std::vector<int>> map_data;
 
-  public:
     World(v2 size);
 
     void draw();
