@@ -6,24 +6,25 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "../include/engine.hpp"
+#include "../include/game.hpp"
 
 int main() {
-    Game *game = new Game();
+    Game* game = new Game();
 
     Sprite p1(game->renderer, "../resources/grass.png", {0, 0, 100, 100});
-    Sprite p2(game->renderer, "../resources/grass.png", {400, 200, 200, 200});
+    Sprite p2(game->renderer, "../resources/grass.png", {0, 200, 200, 200});
 
     SDL_Event event;
-    const uint8_t *scancodes = SDL_GetKeyboardState(NULL);
+    const uint8_t* scancodes = SDL_GetKeyboardState(NULL);
+
     while (game->running) {
         SDL_PollEvent(&event);
         SDL_PumpEvents();
 
         switch (event.type) {
-        case SDL_QUIT:
-            game->running = false;
-            break;
+            case SDL_QUIT:
+                game->running = false;
+                break;
         }
 
         if (scancodes[SDL_SCANCODE_ESCAPE])
@@ -56,6 +57,8 @@ int main() {
         SDL_RenderFillRect(game->renderer, &p1.rect);
         p1.copy(game->renderer);
         p2.copy(game->renderer);
+
+        game->world.update();
 
         SDL_RenderPresent(game->renderer);
     }
