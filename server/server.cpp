@@ -36,8 +36,7 @@ void Server::exit_failure(std::string message) {
 void Server::handle_client(RemoteClient &client) {
     if (SDLNet_SocketReady(client.socket)) {
         std::vector<char> buffer(512);
-        int bytes_received =
-            SDLNet_TCP_Recv(client.socket, buffer.data(), buffer.size());
+        int bytes_received = SDLNet_TCP_Recv(client.socket, buffer.data(), buffer.size());
         if (bytes_received > 0) {
             std::string message(buffer.data(), bytes_received);
             std::cout << "Client says: " << message << std::endl;
@@ -79,8 +78,7 @@ void Server::listen() {
             if (client_socket) {
                 IPaddress *client_ip = SDLNet_TCP_GetPeerAddress(client_socket);
                 if (client_ip) {
-                    std::cout << "New client connected: "
-                              << SDLNet_Read32(&client_ip->host) << ":"
+                    std::cout << "New client connected: " << SDLNet_Read32(&client_ip->host) << ":"
                               << SDLNet_Read16(&client_ip->port) << std::endl;
 
                     RemoteClient client(client_socket, *client_ip);
@@ -100,12 +98,10 @@ void Server::listen() {
         }
 
         // Remove disconnected clients
-        client_connections.erase(std::remove_if(client_connections.begin(),
-                                                client_connections.end(),
-                                                [](const RemoteClient &client) {
-                                                    return !client.connected;
-                                                }),
-                                 client_connections.end());
+        client_connections.erase(
+            std::remove_if(client_connections.begin(), client_connections.end(),
+                           [](const RemoteClient &client) { return !client.connected; }),
+            client_connections.end());
     }
 
     SDLNet_FreeSocketSet(socket_set);

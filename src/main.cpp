@@ -5,11 +5,30 @@
 #include <SDL2/SDL_scancode.h>
 #include <cstdint>
 #include <cstdlib>
+#include <iostream>
+#include <toml++/toml.hpp>
 
 #include "../include/game.hpp"
 
 int main() {
-    Game *game = new Game(false);
+    Settings settings;
+    try {
+        auto settings_t = toml::parse_file("../settings.toml");
+        if (!settings_t.empty()) {
+            settings.video.resolution = v2(settings_t["video"]["resolution"][0].value_or(1280),
+                                           settings_t["video"]["resolution"][1].value_or(720));
+
+            settings.multiplayer.enable = settings_t["multiplayer"]["enable"].value_or(true);
+            settings.multiplayer.server_host =
+                settings_t["multiplayer"]["server_host"].value_or("127.0.0.1");
+            settings.multiplayer.server_port =
+                settings_t["multiplayer"]["server_port"].value_or(4444);
+        }
+    } catch (const toml::parse_error &err) {
+        std::cerr << "Failed to parse config file: " << err.what() << std::endl;
+    }
+
+    Game *game = new Game(settings);
 
     Sprite p1(game->renderer, "../resources/grass.png", {0, 0, 100, 100});
     Sprite p2(game->renderer, "../resources/grass.png", {0, 200, 200, 200});

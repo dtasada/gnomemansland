@@ -1,20 +1,28 @@
 #include "../include/client.hpp"
 #include "../include/engine.hpp"
+#include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <thread>
 
-Client::Client(std::string host, uint16_t port, bool on_by_default) {
-    if (on_by_default) {
-        if (SDLNet_Init() < 0)
-            exit_failure("Failed to initialize SDL_net");
+Client::Client(std::string host, uint16_t port) : connected(false), host(host), port(port) {}
 
-        if (SDLNet_ResolveHost(&server_ip, host.c_str(), port) < 0)
-            exit_failure("Failed to resovle host");
-
-        if (!(socket = SDLNet_TCP_Open(&server_ip)))
-            exit_failure("Failed to open port");
+int Client::start() {
+    if (SDLNet_Init() < 0) {
+        exit_failure("Failed to initialize SDL_net");
+        return EXIT_FAILURE;
     }
+
+    if (SDLNet_ResolveHost(&server_ip, host.c_str(), port) < 0) {
+        exit_failure("Failed to resovle host");
+        return EXIT_FAILURE;
+    }
+
+    if (!(socket = SDLNet_TCP_Open(&server_ip))) {
+        exit_failure("Failed to open port");
+        return 1;
+    }
+
+    return 0;
 }
 
 Client::~Client() {

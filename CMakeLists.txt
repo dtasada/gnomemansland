@@ -1,17 +1,43 @@
 cmake_minimum_required(VERSION 3.31)
 
 project(po6)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "-std=c++23 -Wall -Wextra -O3 ")
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-file(GLOB SRC src/*.cpp)
-set(SOURCES ${SRC})
 
-add_executable(po6 ${SOURCES})
+file(GLOB CLIENT_FILES src/*.cpp)
+file(GLOB SERVER_FILES server/*.cpp)
 
+# Define source files for each target
+set(CLIENT_SRC ${CLIENT_FILES})
+set(SERVER_SRC ${SERVER_FILES})
+
+# Add executables
+add_executable(client ${CLIENT_SRC})
+add_executable(server ${SERVER_SRC})
+
+# Find required packages
 find_package(SDL2 REQUIRED)
 find_package(SDL2_IMAGE REQUIRED)
 find_package(SDL2_NET REQUIRED)
 
+# Include SDL2 headers
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image SDL2_net::SDL2_net)
+
+# Link libraries to the `client` and `server` targets individually
+target_link_libraries(client SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image SDL2_net::SDL2_net)
+target_link_libraries(server SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image SDL2_net::SDL2_net)
+
+add_custom_target(run_client
+    COMMAND ${CMAKE_BINARY_DIR}/bin/client
+    DEPENDS client
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Running the client executables"
+)
+
+add_custom_target(run_server
+    COMMAND ${CMAKE_BINARY_DIR}/bin/server
+    DEPENDS client
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Running the client executables"
+)
