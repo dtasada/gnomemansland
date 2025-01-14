@@ -1,5 +1,5 @@
 #include "../include/client.hpp"
-#include <SDL2/SDL_net.h>
+#include "../include/engine.hpp"
 #include <ctime>
 #include <iostream>
 #include <thread>
@@ -30,13 +30,4 @@ void Client::send(std::string message) {
 void Client::exit_failure(std::string message) {
     std::cerr << message << ": " << SDLNet_GetError() << std::endl;
     delete this;
-}
-
-int main() {
-    Client client("127.0.0.1", 1234);
-
-    while (true) {
-        client.send("Cha cha real smooth client #2");
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-    }
 }

@@ -11,6 +11,7 @@ add_executable(po6 ${SOURCES})
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_IMAGE REQUIRED)
+find_package(SDL2_NET REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image)
+target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image SDL2_net::SDL2_net)
