@@ -1,5 +1,5 @@
 #include "../include/client.hpp"
-#include <SDL2/SDL_net.h>
+#include <SDL_net.h>
 #include <ctime>
 #include <iostream>
 #include <thread>

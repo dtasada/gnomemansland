@@ -1,6 +1,6 @@
 #include "../include/server.hpp"
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_net.h>
+#include <SDL_net.h>
 #include <algorithm>
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include <SDL2/SDL_net.h>
+#include <SDL_net.h>
 #include <mutex>
 #include <string>
 #include <vector>
