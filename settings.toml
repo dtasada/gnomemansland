@@ -1,0 +1,7 @@
+[video]
+resolution = [1280, 720]
+
+[multiplayer]
+enable = false
+server_host = "127.0.0.1"
+server_port = 2000

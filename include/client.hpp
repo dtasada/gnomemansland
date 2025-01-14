@@ -14,8 +14,9 @@ class Client {
     void exit_failure(std::string message);
 
   public:
-    Client(std::string host, uint16_t port, bool on_by_default);
+    Client(std::string host, uint16_t port);
     ~Client();
 
+    int start(void);
     void send(std::string message);
 };
