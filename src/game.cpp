@@ -7,7 +7,7 @@
 #include <iostream>
 
 Game::Game(Settings settings)
-    : fps(60.0f), running(true), world({200, 200}),
+    : fps(60.0f), running(true), world({800, 800}, settings),
       client("127.0.0.1", 2000), settings(settings) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
         exit_failure("Failed to initialize SDL");

@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <cstdint>
 #include <string>
+#include <iostream>
 
 #ifdef __linux
 #include <SDL2/SDL_image.h>
@@ -14,8 +15,8 @@
 
 #include "v2.hpp"
 
-int randint(int min, int max);
-int rand01();
+int64_t randint(int64_t min, int64_t max);
+float rand01();
 
 struct Settings {
     struct {
@@ -27,4 +28,11 @@ struct Settings {
         std::string server_host = "127.0.0.1";
         uint16_t server_port = 4444;
     } multiplayer;
+
+    struct {
+        int octaves = 10;
+        float persistence = 0.5f;
+        float lacunarity = 2.0f;
+        float frequency = 0.004f;
+    } world_generation;
 };

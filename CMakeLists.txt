@@ -27,6 +27,8 @@ include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 if(APPLE)
     include_directories(/opt/homebrew/include)
     link_directories(/opt/homebrew/lib)
+    include_directories(/usr/local/include)
+    link_directories(/usr/local/lib)
 endif()
 
 # Link libraries to the `client` and `server` targets individually

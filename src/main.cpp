@@ -11,19 +11,31 @@
 #include "../include/game.hpp"
 
 int main() {
+    srand(time(nullptr));
+
     Settings settings;
     try {
         auto settings_t = toml::parse_file("../settings.toml");
         if (!settings_t.empty()) {
-            settings.video.resolution = v2(settings_t["video"]["resolution"][0].value_or(1280),
-                                           settings_t["video"]["resolution"][1].value_or(720));
-
-            settings.multiplayer.enable = settings_t["multiplayer"]["enable"].value_or(true);
-            settings.multiplayer.server_host =
-                settings_t["multiplayer"]["server_host"].value_or("127.0.0.1");
-            settings.multiplayer.server_port =
-                settings_t["multiplayer"]["server_port"].value_or(4444);
+            settings = {
+                .video = {
+                    .resolution = v2(settings_t["video"]["resolution"][0].value_or(1280),
+                        settings_t["video"]["resolution"][1].value_or(720))
+                },
+                .multiplayer = {
+                    .enable = settings_t["multiplayer"]["enable"].value_or(true),
+                    .server_host = settings_t["multiplayer"]["server_host"].value_or("127.0.0.1"),
+                    .server_port = settings_t["multiplayer"]["server_port"].value_or(static_cast<uint16_t>(4444)),
+                },
+                .world_generation = {
+                    .octaves = settings_t["world_generation"]["octaves"].value_or(10),
+                    .persistence = settings_t["world_generation"]["persistence"].value_or(0.5f),
+                    .lacunarity = settings_t["world_generation"]["lacunarity"].value_or(2.0f),
+                    .frequency = settings_t["world_generation"]["frequency"].value_or(0.004f),
+                }
+            };
         }
+
     } catch (const toml::parse_error &err) {
         std::cerr << "Failed to parse config file: " << err.what() << std::endl;
     }
@@ -35,6 +47,8 @@ int main() {
 
     SDL_Event event;
     const uint8_t *scancodes = SDL_GetKeyboardState(NULL);
+
+    game->world.update(game->renderer);
 
     while (game->running) {
         SDL_PollEvent(&event);
@@ -68,14 +82,6 @@ int main() {
             p2.rect.x += 10;
 
         SDL_Delay(1000.0f / game->fps);
-
-        SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 255);
-        SDL_RenderClear(game->renderer);
-
-        SDL_SetRenderDrawColor(game->renderer, 255, 0, 0, 255);
-        SDL_RenderFillRect(game->renderer, &p1.rect);
-        p1.copy(game->renderer);
-        p2.copy(game->renderer);
 
         game->world.update(game->renderer);
 

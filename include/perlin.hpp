@@ -6,7 +6,7 @@
 
 class PerlinNoise {
 public:
-    explicit PerlinNoise(unsigned int seed);
+    PerlinNoise(unsigned int seed);
 
     double noise(double x, double y, double z) const;
 

@@ -5,3 +5,9 @@ resolution = [1280, 720]
 enable = false
 server_host = "127.0.0.1"
 server_port = 2000
+
+[world_generation]
+octaves = 15
+persistence = 0.5
+lacunarity = 2
+frequency = 0.004
