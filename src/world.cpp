@@ -4,8 +4,9 @@
 #include <iostream>
 
 World::World(v2 size, Settings settings) : size(size) {
-    map_data = std::vector<std::vector<Tile>>(size.y, std::vector<Tile>(size.x));
+    map_data = std::vector<std::vector<v3>>(size.y, std::vector<v3>(size.x));
     z = 0;
+    render_scale = 1.0f;
 
     int64_t seed = randint(0, SDL_MAX_UINT16);
 
@@ -18,7 +19,6 @@ World::World(v2 size, Settings settings) : size(size) {
     PerlinNoise pn(seed); // Seed value
     for (int y = 0; y < size.y; y++) {
         for (int x = 0; x < size.x; x++) {
-            // (-1, 1) interval
             z += 3 * pow(10, -7);
 
             float freq = settings.world_generation.frequency;
@@ -28,8 +28,8 @@ World::World(v2 size, Settings settings) : size(size) {
 
             float nx, ny;
             for (int i = 0; i < octaves; i++) {
-                nx = x * freq;
-                ny = y * freq;
+                nx = x * (freq * 1);
+                ny = y * (freq * 1);
 
                 total += amp * pn.noise(nx, ny, z);
 
@@ -37,19 +37,20 @@ World::World(v2 size, Settings settings) : size(size) {
                 amp *= pers;
                 freq *= lac;
             }
-            // printf("%f %f \n", total, max_value);
+            // normalize total height to (0, 1)
             total = (total + max_value) / (max_value * 2);
 
-            float h = total;
-            Tile tile;
-            if (h <= 0.4) {
-                tile = Tile::DEEP_WATER;
-            } else if (h <= 0.5) {
-                tile = Tile::WATER;
-            } else if (h <= 0.52) {
-                tile = Tile::SAND;
+            v3 tile;
+            if (total <= TileData::WATER) {
+                tile = lerp_color(Color::WATER_LOW, Color::WATER_HIGH, total / TileData::WATER);
+            } else if (total <= TileData::SAND) {
+                tile = lerp_color(Color::SAND_LOW, Color::SAND_HIGH, (total - TileData::WATER) / (TileData::WATER - TileData::SAND));
+            } else if (total <= TileData::GRASS) {
+                tile = lerp_color(Color::GRASS_LOW, Color::GRASS_HIGH, (total - TileData::SAND) / (TileData::GRASS - TileData::SAND));
+            } else if (total <= TileData::MOUNTAIN) {
+                tile = lerp_color(Color::MOUNTAIN_LOW, Color::MOUNTAIN_HIGH, (total - TileData::GRASS) / (TileData::MOUNTAIN - TileData::GRASS));
             } else {
-                tile = Tile::GRASS;
+                tile = v3(255, 255, 255);
             }
             map_data[y][x] = tile;
         }
@@ -63,25 +64,12 @@ void World::update(SDL_Renderer *renderer) {
 void World::draw(SDL_Renderer *renderer) {
     for (int y = 0; y < size.y; y++) {
         for (int x = 0; x < size.x; x++) {
-            Tile tile = map_data[y][x];
-            int blit_x = x * TILE_SIZE;
-            int blit_y = y * TILE_SIZE;
-            SDL_Rect rect = {blit_x, blit_y, TILE_SIZE, TILE_SIZE};
+            v3 tile = map_data[y][x];
+            int blit_x = x * render_scale;
+        int blit_y = y * render_scale;
+            SDL_Rect rect = {blit_x, blit_y, static_cast<int>(render_scale), static_cast<int>(render_scale)};
 
-            switch (tile) {
-                case Tile::DEEP_WATER:
-                    SDL_SetRenderDrawColor(renderer, 23, 80, 172, 255);
-                    break;
-                case Tile::WATER:
-                    SDL_SetRenderDrawColor(renderer, 70, 130, 180, 255);
-                    break;
-                case Tile::SAND:
-                    SDL_SetRenderDrawColor(renderer, 231, 215, 190, 255);
-                    break;
-                case Tile::GRASS:
-                    SDL_SetRenderDrawColor(renderer, 86, 125, 70, 255);
-                    break;
-            }
+            SDL_SetRenderDrawColor(renderer, tile.x, tile.y, tile.z, 255);
             SDL_RenderFillRect(renderer, &rect);
         }
     }

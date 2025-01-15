@@ -14,9 +14,22 @@
 #endif
 
 #include "v2.hpp"
+#include "v3.hpp"
 
 int64_t randint(int64_t min, int64_t max);
 float rand01();
+v3 lerp_color(v3 c1, v3 c2, float m);
+
+struct Color {
+    static v3 WATER_LOW;
+    static v3 WATER_HIGH;
+    static v3 SAND_LOW;
+    static v3 SAND_HIGH;
+    static v3 GRASS_LOW;
+    static v3 GRASS_HIGH;
+    static v3 MOUNTAIN_LOW;
+    static v3 MOUNTAIN_HIGH;
+};
 
 struct Settings {
     struct {

@@ -1,5 +1,5 @@
 [video]
-resolution = [1280, 720]
+resolution = [800, 800]
 
 [multiplayer]
 enable = false

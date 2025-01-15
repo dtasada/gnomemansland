@@ -2,6 +2,18 @@
 #include <iostream>
 #include <random>
 
+
+// structs
+v3 Color::WATER_LOW = v3(0, 0, 50);
+v3 Color::WATER_HIGH = v3(80, 170, 210);
+v3 Color::SAND_LOW = v3(237, 206, 178);
+v3 Color::SAND_HIGH = v3(255, 245, 193);
+v3 Color::GRASS_LOW = v3(2, 166, 130);
+v3 Color::GRASS_HIGH = v3(4, 138, 102);
+v3 Color::MOUNTAIN_LOW = v3(80, 80, 80);
+v3 Color::MOUNTAIN_HIGH = v3(120, 120, 120);
+
+// functions
 int64_t randint(int64_t a, int64_t b) {
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -14,4 +26,8 @@ float rand01() {
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(0.0, 1.0);
     return dis(gen);
+}
+
+v3 lerp_color(v3 c1, v3 c2, float m) {
+    return c1 + v3(m, m, m) * (c2 - c1);
 }

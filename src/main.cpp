@@ -80,6 +80,12 @@ int main() {
             p2.rect.x -= 10;
         if (scancodes[SDL_SCANCODE_RIGHT])
             p2.rect.x += 10;
+        
+        if (scancodes[SDL_SCANCODE_UP])
+            game->world.render_scale += 1;
+        
+        if (scancodes[SDL_SCANCODE_DOWN] && game->world.render_scale > 1)
+            game->world.render_scale -= 1;
 
         SDL_Delay(1000.0f / game->fps);
 
