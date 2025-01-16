@@ -3,7 +3,6 @@
 #include <SDL2/SDL.h>
 #include <cstdint>
 #include <string>
-#include <iostream>
 
 #ifdef __linux
 #include <SDL2/SDL_image.h>
@@ -16,7 +15,7 @@
 #include "v2.hpp"
 #include "v3.hpp"
 
-int64_t randint(int64_t min, int64_t max);
+int64_t randint64(int64_t min, int64_t max);
 float rand01();
 v3 lerp_color(v3 c1, v3 c2, float m);
 
@@ -43,6 +42,7 @@ struct Settings {
     } multiplayer;
 
     struct {
+        uint32_t seed = randint64(0, SDL_MAX_UINT32);
         int octaves = 10;
         float persistence = 0.5f;
         float lacunarity = 2.0f;

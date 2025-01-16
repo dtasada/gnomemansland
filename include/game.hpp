@@ -29,12 +29,10 @@ struct Sprite {
     v2 vel;
     v2 acc;
 
-    Sprite(SDL_Renderer *renderer, std::string image_path, SDL_Rect rect, v2 vel = {0, 0},
-           v2 acc = {0, 0});
+    Sprite(SDL_Renderer *renderer, std::string image_path, SDL_Rect rect, v2 vel = {0, 0}, v2 acc = {0, 0});
     ~Sprite();
 
     void copy(SDL_Renderer *renderer);
 };
 
 int exit_failure(std::string message);
-int randint(int min, int max);

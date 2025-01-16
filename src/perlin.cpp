@@ -1,7 +1,9 @@
 #include "../include/perlin.hpp"
+#include <algorithm>
+#include <cstdint>
 #include <random>
 
-PerlinNoise::PerlinNoise(unsigned int seed) {
+PerlinNoise::PerlinNoise(uint32_t seed) {
     p.resize(256);
 
     // Fill p with values from 0 to 255
@@ -15,13 +17,9 @@ PerlinNoise::PerlinNoise(unsigned int seed) {
     p.insert(p.end(), p.begin(), p.end());
 }
 
-double PerlinNoise::fade(double t) const {
-    return t * t * t * (t * (t * 6 - 15) + 10);
-}
+double PerlinNoise::fade(double t) const { return t * t * t * (t * (t * 6 - 15) + 10); }
 
-double PerlinNoise::lerp(double t, double a, double b) const {
-    return a + t * (b - a);
-}
+double PerlinNoise::lerp(double t, double a, double b) const { return a + t * (b - a); }
 
 double PerlinNoise::grad(int hash, double x, double y, double z) const {
     int h = hash & 15;
@@ -50,15 +48,10 @@ double PerlinNoise::noise(double x, double y, double z) const {
     int BA = p[B] + Z;
     int BB = p[B + 1] + Z;
 
-    return lerp(w, 
-                lerp(v, 
-                     lerp(u, grad(p[AA], x, y, z),
-                          grad(p[BA], x - 1, y, z)),
-                     lerp(u, grad(p[AB], x, y - 1, z),
-                          grad(p[BB], x - 1, y - 1, z))),
-                lerp(v, 
-                     lerp(u, grad(p[AA + 1], x, y, z - 1),
-                          grad(p[BA + 1], x - 1, y, z - 1)),
-                     lerp(u, grad(p[AB + 1], x, y - 1, z - 1),
-                          grad(p[BB + 1], x - 1, y - 1, z - 1))));
+    return lerp(
+        w,
+        lerp(v, lerp(u, grad(p[AA], x, y, z), grad(p[BA], x - 1, y, z)),
+             lerp(u, grad(p[AB], x, y - 1, z), grad(p[BB], x - 1, y - 1, z))),
+        lerp(v, lerp(u, grad(p[AA + 1], x, y, z - 1), grad(p[BA + 1], x - 1, y, z - 1)),
+             lerp(u, grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1))));
 }
