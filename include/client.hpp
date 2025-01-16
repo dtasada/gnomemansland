@@ -1,6 +1,7 @@
 #include "../include/engine.hpp"
 #include <sqlite3.h>
 #include <string>
+#include <thread>
 
 class Client {
     bool connected;
@@ -10,13 +11,17 @@ class Client {
 
     IPaddress server_ip;
     TCPsocket socket;
+    SDLNet_SocketSet socket_set;
 
-    void exit_failure(std::string message);
+    std::thread listen_thread;
+
+    int exit_failure(std::string message);
 
   public:
-    Client(std::string host, uint16_t port);
+    Client(Settings);
     ~Client();
 
     int start(void);
+    void listen(void);
     void send(std::string message);
 };

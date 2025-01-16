@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../include/v2.hpp"
 #include "../include/engine.hpp"
+#include "../include/v2.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
@@ -19,14 +19,13 @@ struct TileData {
 
 class World {
   public:
+    World(Settings);
 
     v2 size;
-    std::vector<std::vector<v3>> map_data;
-    double z;
+    float z;
     float render_scale;
+    std::vector<std::vector<v3>> map_data;
 
-    World(v2 size, Settings settings);
-
-    void draw(SDL_Renderer *renderer);
-    void update(SDL_Renderer *renderer);
+    void draw(SDL_Renderer *);
+    void update(SDL_Renderer *);
 };

@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
+#include <toml++/impl/parse_error.hpp>
 #include <toml++/toml.hpp>
 
 #include "../include/game.hpp"
@@ -15,8 +16,9 @@ int main() {
 
     Settings settings;
     try {
-        auto settings_t = toml::parse_file("../settings.toml");
-        if(!settings_t.empty()) {
+        toml::table settings_t = toml::parse_file("settings.toml");
+
+        if (!settings_t.empty()) {
             settings = {
                 .video =
                     {
@@ -41,57 +43,58 @@ int main() {
                     },
             };
         }
-    } catch(const toml::parse_error &err) {
-        std::cerr << "Failed to parse config file: " << err.what()
-                  << std::endl;
+    } catch (const toml::parse_error &err) {
+        std::cerr << "Failed to parse config file: " << err.what() << std::endl;
     }
 
     Game *game = new Game(settings);
 
-    Sprite p1(game->renderer, "../resources/grass.png", {0, 0, 100, 100});
-    Sprite p2(game->renderer, "../resources/grass.png", {0, 200, 200, 200});
+    Sprite p1(game->renderer, "./resources/grass.png", {0, 0, 100, 100});
+    Sprite p2(game->renderer, "./resources/grass.png", {0, 200, 200, 200});
 
     SDL_Event event;
     const uint8_t *scancodes = SDL_GetKeyboardState(NULL);
 
     game->world.update(game->renderer);
 
-    while(game->running) {
+    while (game->running) {
         SDL_PollEvent(&event);
         SDL_PumpEvents();
 
-        switch(event.type) {
-        case SDL_QUIT: game->running = false; break;
+        switch (event.type) {
+        case SDL_QUIT:
+            game->running = false;
+            break;
         }
 
-        if(scancodes[SDL_SCANCODE_ESCAPE])
+        if (scancodes[SDL_SCANCODE_ESCAPE])
             game->running = false;
 
-        if(scancodes[SDL_SCANCODE_W])
+        if (scancodes[SDL_SCANCODE_W])
             p1.rect.y -= 10;
-        if(scancodes[SDL_SCANCODE_S])
+        if (scancodes[SDL_SCANCODE_S])
             p1.rect.y += 10;
-        if(scancodes[SDL_SCANCODE_A])
+        if (scancodes[SDL_SCANCODE_A])
             p1.rect.x -= 10;
-        if(scancodes[SDL_SCANCODE_D])
+        if (scancodes[SDL_SCANCODE_D])
             p1.rect.x += 10;
 
-        if(scancodes[SDL_SCANCODE_UP])
+        if (scancodes[SDL_SCANCODE_UP])
             p2.rect.y -= 10;
-        if(scancodes[SDL_SCANCODE_DOWN])
+        if (scancodes[SDL_SCANCODE_DOWN])
             p2.rect.y += 10;
-        if(scancodes[SDL_SCANCODE_LEFT])
+        if (scancodes[SDL_SCANCODE_LEFT])
             p2.rect.x -= 10;
-        if(scancodes[SDL_SCANCODE_RIGHT])
+        if (scancodes[SDL_SCANCODE_RIGHT])
             p2.rect.x += 10;
 
-        if(scancodes[SDL_SCANCODE_UP])
+        if (scancodes[SDL_SCANCODE_UP])
             game->world.render_scale += 1;
 
-        if(scancodes[SDL_SCANCODE_DOWN] && game->world.render_scale > 1)
+        if (scancodes[SDL_SCANCODE_DOWN] && game->world.render_scale > 1)
             game->world.render_scale -= 1;
 
-        SDL_Delay(1000.0f / game->fps);
+        SDL_Delay(1000.0f / game->target_framerate);
 
         game->world.update(game->renderer);
 

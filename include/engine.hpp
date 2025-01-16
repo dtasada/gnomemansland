@@ -33,6 +33,7 @@ struct Color {
 struct Settings {
     struct {
         v2 resolution = v2(1280, 720);
+        uint16_t target_framerate = 60;
     } video;
 
     struct {
@@ -42,6 +43,7 @@ struct Settings {
     } multiplayer;
 
     struct {
+        v2 resolution = v2(800, 800);
         uint32_t seed = randint64(0, SDL_MAX_UINT32);
         int octaves = 10;
         float persistence = 0.5f;

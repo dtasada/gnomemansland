@@ -37,12 +37,12 @@ target_link_libraries(server SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image SD
 
 add_custom_target(build-client
     DEPENDS client
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	WORKING_DIRECTORY $CWD
     COMMENT "Running the client executables"
 )
 
 add_custom_target(build-server
     DEPENDS server
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	WORKING_DIRECTORY $CWD
     COMMENT "Running the server executables"
 )
