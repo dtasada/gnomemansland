@@ -20,9 +20,10 @@ add_executable(server ${SERVER_SRC})
 find_package(SDL2 REQUIRED)
 find_package(SDL2_IMAGE REQUIRED)
 find_package(SDL2_NET REQUIRED)
+find_package(SQLite3 REQUIRED)
 
-# Include SDL2 headers
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${SQLITE3_INCLUDE_DIRS})
 
 if(APPLE)
     include_directories(/opt/homebrew/include)
@@ -31,9 +32,30 @@ if(APPLE)
     link_directories(/usr/local/lib)
 endif()
 
-# Link libraries to the `client` and `server` targets individually
-target_link_libraries(client SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image SDL2_net::SDL2_net)
-target_link_libraries(server SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image SDL2_net::SDL2_net)
+include(FetchContent)
+FetchContent_Declare(
+    sqlite_orm
+    GIT_REPOSITORY https://github.com/fnc12/sqlite_orm.git
+    GIT_TAG master
+)
+
+FetchContent_MakeAvailable(sqlite_orm)
+target_include_directories(server PRIVATE ${sqlite_orm_SOURCE_DIR}/include)
+
+target_link_libraries(client
+	SDL2::SDL2
+	SDL2::SDL2main
+	SDL2_image::SDL2_image
+	SDL2_net::SDL2_net
+	SQLite::SQLite3
+)
+target_link_libraries(server
+	SDL2::SDL2
+	SDL2::SDL2main
+	SDL2_image::SDL2_image
+	SDL2_net::SDL2_net
+	SQLite::SQLite3
+)
 
 add_custom_target(build-client
     DEPENDS client
