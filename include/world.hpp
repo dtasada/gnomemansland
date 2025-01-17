@@ -10,8 +10,8 @@
 // enum class TileType {WATER, SAND, GRASS, MOUNTAIN, SNOW};
 
 struct TileData {
-    static constexpr float WATER = 0.45f;
-    static constexpr float SAND = 0.5f;
+    static constexpr float WATER = 0.5f;
+    static constexpr float SAND = 0.54f;
     static constexpr float GRASS = 0.61f;
     static constexpr float MOUNTAIN = 0.68f;
     static constexpr float SNOW = 1.f;
