@@ -9,6 +9,7 @@
 #include <toml++/toml.hpp>
 
 #include "../include/game.hpp"
+#include "../include/engine.hpp"
 
 int main() {
     srand(time(nullptr));
