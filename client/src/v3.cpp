@@ -2,7 +2,7 @@
 
 v3::v3(float x, float y, float z) : x(x), y(y), z(z) {};
 v3::v3(float v) : x(v), y(v), z(v) {};
-v3::v3() : v3(0) {};
+v3::v3(void) : v3(0) {};
 
 v3 v3::operator+(const v3 &rhs) const { return v3(x + rhs.x, y + rhs.y, z + rhs.z); }
 v3 v3::operator-(const v3 &rhs) const { return v3(x - rhs.x, y - rhs.y, z - rhs.z); }

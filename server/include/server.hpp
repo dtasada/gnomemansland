@@ -1,4 +1,11 @@
-#include "../include/engine.hpp"
+#pragma once
+
+#ifdef __linux
+#include <SDL2/SDL_net.h>
+#elif __APPLE__
+#include <SDL_net.h>
+#endif
+
 #include <mutex>
 #include <string>
 #include <vector>

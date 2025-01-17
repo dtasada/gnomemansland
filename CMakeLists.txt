@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-file(GLOB CLIENT_FILES src/*.cpp)
-file(GLOB SERVER_FILES server/*.cpp)
+file(GLOB CLIENT_FILES client/src/*.cpp)
+file(GLOB SERVER_FILES server/src/*.cpp)
 
 # Define source files for each target
 set(CLIENT_SRC ${CLIENT_FILES})
