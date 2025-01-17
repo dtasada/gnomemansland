@@ -23,12 +23,12 @@ class Server {
     std::mutex client_mutex;
 
     void exit_failure(std::string message);
-    void handle_client(RemoteClient &client);
 
   public:
     Server(uint16_t port);
     ~Server();
 
     void listen(void);
+    void handle_clients(void);
     void send_to_all(std::string message);
 };

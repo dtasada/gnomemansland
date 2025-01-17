@@ -35,16 +35,14 @@ endif()
 target_link_libraries(client SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image SDL2_net::SDL2_net)
 target_link_libraries(server SDL2::SDL2 SDL2::SDL2main SDL2_image::SDL2_image SDL2_net::SDL2_net)
 
-add_custom_target(run_client
-    COMMAND ${CMAKE_BINARY_DIR}/bin/client
+add_custom_target(build-client
     DEPENDS client
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	WORKING_DIRECTORY $CWD
     COMMENT "Running the client executables"
 )
 
-add_custom_target(run_server
-    COMMAND ${CMAKE_BINARY_DIR}/bin/server
-    DEPENDS client
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMENT "Running the client executables"
+add_custom_target(build-server
+    DEPENDS server
+	WORKING_DIRECTORY $CWD
+    COMMENT "Running the server executables"
 )

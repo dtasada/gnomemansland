@@ -1,10 +1,10 @@
-#include "../include/engine.hpp"
 #include "../include/server.hpp"
-#include <algorithm>
+#include <SDL2/SDL_net.h>
 #include <iostream>
+#include <thread>
+#include <vector>
 
-RemoteClient::RemoteClient(TCPsocket socket, IPaddress address)
-    : socket(socket), address(address), connected(true) {}
+RemoteClient::RemoteClient(TCPsocket socket, IPaddress address) : socket(socket), address(address), connected(true) {}
 
 Server::Server(uint16_t port) : port(port) {
     if (SDLNet_Init() < 0)
@@ -25,7 +25,7 @@ Server::~Server() {
     running = false;
     SDLNet_TCP_Close(socket);
     SDLNet_Quit();
-    std::cout << "Closed SDL_net." << std::endl;
+    std::clog << "Closed SDL_net." << std::endl;
 }
 
 void Server::exit_failure(std::string message) {
@@ -33,76 +33,76 @@ void Server::exit_failure(std::string message) {
     delete this;
 }
 
-void Server::handle_client(RemoteClient &client) {
-    if (SDLNet_SocketReady(client.socket)) {
-        std::vector<char> buffer(512);
-        int bytes_received = SDLNet_TCP_Recv(client.socket, buffer.data(), buffer.size());
-        if (bytes_received > 0) {
-            std::string message(buffer.data(), bytes_received);
-            std::cout << "Client says: " << message << std::endl;
-
-            if (message == "exit") {
+void Server::handle_clients() {
+    // Listen for incoming messages from clients
+    for (RemoteClient &client : client_connections) {
+        if (SDLNet_SocketReady(client.socket)) {
+            std::vector<char> buffer(512);
+            int bytes_received = SDLNet_TCP_Recv(client.socket, buffer.data(), buffer.size());
+            if (bytes_received > 0) {
+                std::string message(buffer.data(), bytes_received);
+                std::clog << "Client says: " << message << std::endl;
+            } else {
                 client.connected = false;
                 SDLNet_TCP_DelSocket(socket_set, client.socket);
                 SDLNet_TCP_Close(client.socket);
-                std::cout << "Client disconnected.\n";
             }
-        } else {
-            client.connected = false;
-            SDLNet_TCP_DelSocket(socket_set, client.socket);
-            SDLNet_TCP_Close(client.socket);
         }
     }
+
+    // Remove any disconnected clients
+    std::erase_if(client_connections, [](const RemoteClient &client) {
+        if (!client.connected)
+            std::clog << "Client disconnected: " << client.address.host << ":" << client.address.port << std::endl;
+        return !client.connected;
+    });
+
+    // Send a ping to all clients
+    send_to_all("ping");
 }
 
 void Server::listen() {
-    std::cout << "SDL_net server listening on port " << port << std::endl;
+    std::clog << "SDL_net server listening on port " << port << std::endl;
 
     // Create a socket set for the server and clients
-    const int max_clients = 32;
-    socket_set = SDLNet_AllocSocketSet(max_clients);
+    socket_set = SDLNet_AllocSocketSet(32);
     if (!socket_set)
         exit_failure("Failed to allocate socket set");
 
     SDLNet_TCP_AddSocket(socket_set, socket);
 
     while (running) {
-        // Check sockets for activity
+        handle_clients();
+
         if (SDLNet_CheckSockets(socket_set, 1000) <= 0) {
-            continue; // No activity
+            continue;
         }
 
-        // Accept new client connections
         if (SDLNet_SocketReady(socket)) {
             TCPsocket client_socket = SDLNet_TCP_Accept(socket);
             if (client_socket) {
                 IPaddress *client_ip = SDLNet_TCP_GetPeerAddress(client_socket);
                 if (client_ip) {
-                    std::cout << "New client connected: " << SDLNet_Read32(&client_ip->host) << ":"
-                              << SDLNet_Read16(&client_ip->port) << std::endl;
+                    std::clog << "New client connected: " << client_ip->host << ":" << client_ip->port << std::endl;
 
-                    RemoteClient client(client_socket, *client_ip);
                     SDLNet_TCP_AddSocket(socket_set, client_socket);
-
-                    {
-                        std::lock_guard<std::mutex> lock(client_mutex);
-                        client_connections.push_back(client);
-                    }
+                    client_connections.emplace_back(client_socket, *client_ip);
                 }
             }
         }
 
-        // Check for activity on client sockets
-        for (RemoteClient &client : client_connections) {
-            handle_client(client);
-        }
-
-        // Remove disconnected clients
-        client_connections.erase(
-            std::remove_if(client_connections.begin(), client_connections.end(),
-                           [](const RemoteClient &client) { return !client.connected; }),
-            client_connections.end());
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     SDLNet_FreeSocketSet(socket_set);
+}
+
+void Server::send_to_all(std::string message) {
+    for (RemoteClient &client : client_connections) {
+        std::cout << "pinging" << std::endl;
+
+        int len = message.length() + 1;
+        if (SDLNet_TCP_Send(client.socket, (void *)message.c_str(), len) < len)
+            std::cerr << "Failed to send message" << std::endl;
+    }
 }

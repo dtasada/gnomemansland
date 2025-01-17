@@ -3,7 +3,6 @@
 #include <SDL2/SDL.h>
 #include <cstdint>
 #include <string>
-#include <iostream>
 
 #ifdef __linux
 #include <SDL2/SDL_image.h>
@@ -16,7 +15,8 @@
 #include "v2.hpp"
 #include "v3.hpp"
 
-int64_t randint(int64_t min, int64_t max);
+int64_t randint64(int64_t min, int64_t max);
+float rand01();
 v3 lerp_color(v3 c1, v3 c2, float m);
 float rand01();
 
@@ -34,6 +34,7 @@ namespace Color {
 struct Settings {
     struct {
         v2 resolution = v2(1280, 720);
+        uint16_t target_framerate = 60;
     } video;
 
     struct {
@@ -43,6 +44,8 @@ struct Settings {
     } multiplayer;
 
     struct {
+        v2 resolution = v2(800, 800);
+        uint32_t seed = randint64(0, SDL_MAX_UINT32);
         int octaves = 10;
         float persistence = 0.5f;
         float lacunarity = 2.0f;
