@@ -2,7 +2,6 @@
 
 #include "../include/engine.hpp"
 #include "../include/v2.hpp"
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <vector>
@@ -24,6 +23,6 @@ class World {
     float render_scale;
     std::vector<std::vector<v3>> map_data;
 
-    void draw(SDL_Renderer*);
-    void update(SDL_Renderer*);
+    void draw(SDL_Renderer *);
+    void update(SDL_Renderer *);
 };

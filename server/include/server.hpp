@@ -1,9 +1,11 @@
 #pragma once
 
-#ifdef __linux
+#if defined(__linux)
 #include <SDL2/SDL_net.h>
-#elif __APPLE__
+#include <nlohmann/json.hpp>
+#elif defined(__APPLE__) || defined(_WIN32)
 #include <SDL_net.h>
+#include <nlohmann/json.hpp>
 #endif
 
 #include <mutex>

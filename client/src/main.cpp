@@ -1,4 +1,3 @@
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_keycode.h>
@@ -9,10 +8,10 @@
 #include <toml++/impl/parse_error.hpp>
 #include <toml++/toml.hpp>
 
-#include "../include/game.hpp"
 #include "../include/engine.hpp"
+#include "../include/game.hpp"
 
-int main() {
+int main(int argc, char *argv[]) {
     srand(time(nullptr));
 
     Settings settings;
@@ -23,46 +22,38 @@ int main() {
             settings = {
                 .video =
                     {
-                        .resolution = v2(settings_t["video"]["resolution"][0].value_or(
-                                             settings.video.resolution.x),
-                                         settings_t["video"]["resolution"][1].value_or(
-                                             settings.video.resolution.y)),
+                        .resolution = v2(settings_t["video"]["resolution"][0].value_or(settings.video.resolution.x),
+                                         settings_t["video"]["resolution"][1].value_or(settings.video.resolution.y)),
                     },
                 .multiplayer =
                     {
-                        .enable = settings_t["multiplayer"]["enable"].value_or(
-                            settings.multiplayer.enable),
-                        .server_host = settings_t["multiplayer"]["server_host"].value_or(
-                            settings.multiplayer.server_host),
-                        .server_port = settings_t["multiplayer"]["server_port"].value_or(
-                            settings.multiplayer.server_port),
+                        .enable = settings_t["multiplayer"]["enable"].value_or(settings.multiplayer.enable),
+                        .server_host = settings_t["multiplayer"]["server_host"].value_or(settings.multiplayer.server_host),
+                        .server_port = settings_t["multiplayer"]["server_port"].value_or(settings.multiplayer.server_port),
                     },
                 .world_generation =
                     {
-                        .seed = settings_t["world_generation"]["seed"].value_or(
-                            settings.world_generation.seed),
-                        .octaves = settings_t["world_generation"]["octaves"].value_or(
-                            settings.world_generation.octaves),
-                        .persistence = settings_t["world_generation"]["persistence"].value_or(
-                            settings.world_generation.persistence),
-                        .lacunarity = settings_t["world_generation"]["lacunarity"].value_or(
-                            settings.world_generation.lacunarity),
-                        .frequency = settings_t["world_generation"]["frequency"].value_or(
-                            settings.world_generation.frequency),
+                        .seed = settings_t["world_generation"]["seed"].value_or(settings.world_generation.seed),
+                        .octaves = settings_t["world_generation"]["octaves"].value_or(settings.world_generation.octaves),
+                        .persistence =
+                            settings_t["world_generation"]["persistence"].value_or(settings.world_generation.persistence),
+                        .lacunarity =
+                            settings_t["world_generation"]["lacunarity"].value_or(settings.world_generation.lacunarity),
+                        .frequency = settings_t["world_generation"]["frequency"].value_or(settings.world_generation.frequency),
                     },
             };
         }
-    } catch (const toml::parse_error& err) {
+    } catch (const toml::parse_error &err) {
         std::cerr << "Failed to parse config file: " << err.what() << std::endl;
     }
 
-    Game* game = new Game(settings);
+    Game *game = new Game(settings);
 
     Sprite p1(game->renderer, "./resources/grass.png", {0, 0, 100, 100});
     Sprite p2(game->renderer, "./resources/grass.png", {0, 200, 200, 200});
 
     SDL_Event event;
-    const uint8_t* scancodes = SDL_GetKeyboardState(NULL);
+    const uint8_t *scancodes = SDL_GetKeyboardState(NULL);
 
     game->world.update(game->renderer);
 
