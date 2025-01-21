@@ -1,27 +1,31 @@
 #include "../include/server.hpp"
 #include <cstdlib>
 #include <iostream>
-#include <sqlite_orm/sqlite_orm.h>
+#include <nlohmann/detail/conversions/from_json.hpp>
+#include <nlohmann/detail/conversions/to_json.hpp>
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
+
+using json = nlohmann::json;
 
 struct Troop {
     int id, x, y, health;
+
+    json to_json() const { return json{{"id", id}, {"x", x}, {"y", y}, {"health", health}}; }
+
+    static Troop from_json(const json &j) {
+        return {
+            .id = j.at("id").get<int>(),
+            .x = j.at("x").get<int>(),
+            .y = j.at("y").get<int>(),
+            .health = j.at("health").get<int>(),
+        };
+    }
 };
 
 int main(int argc, char *argv[]) {
-    using namespace sqlite_orm;
-    auto storage =
-        make_storage("server/game.db", make_table("troops", make_column("id", &Troop::id, primary_key().autoincrement()),
-                                                  make_column("x", &Troop::x), make_column("y", &Troop::y),
-                                                  make_column("health", &Troop::health)));
-
-    storage.sync_schema();
-    storage.replace(Troop{42, 10, 20, 10000000});
-    storage.replace(Troop{69, 1, 40, -2000});
-
-    for (Troop &t : storage.get_all<Troop>()) {
-        std::cout << "Troop ID: " << t.id << ", Position: (" << t.x << ", " << t.y << "), Health: " << t.health
-                  << ", Health: " << t.health << std::endl;
-    }
+    std::cout << "My Troop" << Troop::from_json(json::parse("{'id': 69, 'x': 2, 'y': 4, 'health': 100}")).to_json().dump()
+              << std::endl;
 
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;

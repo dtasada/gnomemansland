@@ -30,9 +30,9 @@ class Client {
 
   public:
     Client(Settings);
-    ~Client();
 
     int start(void);
+    void stop(void);
     void listen(void);
     void send(std::string message);
 };

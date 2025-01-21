@@ -15,7 +15,7 @@ Client::Client(Settings settings) {
         start();
 }
 
-Client::~Client() {
+void Client::stop() {
     connected = false;
     if (listen_thread.joinable())
         listen_thread.join();
@@ -66,7 +66,7 @@ void Client::listen() {
                 std::clog << "Received message: " << message << std::endl;
 
                 if (message.compare("ping")) {
-                    std::clog << "compare" << std::endl;
+                    std::clog << "ping received" << std::endl;
                 }
             } else {
                 std::clog << "Connection lost or error while receiving data." << std::endl;
@@ -76,8 +76,6 @@ void Client::listen() {
 
         SDL_Delay(100);
     }
-
-    delete this;
 }
 
 void Client::send(std::string message) {
