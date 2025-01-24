@@ -1,5 +1,4 @@
 #include "../include/server.hpp"
-#include <SDL2/SDL_net.h>
 #include <iostream>
 #include <thread>
 #include <vector>

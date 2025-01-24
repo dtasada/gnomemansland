@@ -1,4 +1,13 @@
-#include "../include/engine.hpp"
+#pragma once
+
+#if defined(__linux)
+#include <SDL2/SDL_net.h>
+#include <nlohmann/json.hpp>
+#elif defined(__APPLE__) || defined(_WIN32)
+#include <SDL_net.h>
+#include <nlohmann/json.hpp>
+#endif
+
 #include <mutex>
 #include <string>
 #include <vector>

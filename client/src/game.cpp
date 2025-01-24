@@ -24,6 +24,7 @@ Game::Game(Settings st) : world(st), client(st) {
 }
 
 Game::~Game() {
+    client.stop();
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();

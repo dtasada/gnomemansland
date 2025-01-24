@@ -2,20 +2,17 @@
 
 #include "../include/engine.hpp"
 #include "../include/v2.hpp"
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <vector>
 
-// enum class TileType {WATER, SAND, GRASS, MOUNTAIN, SNOW};
-
-struct TileData {
-    static constexpr float WATER = 0.5f;
-    static constexpr float SAND = 0.53f;
-    static constexpr float GRASS = 0.61f;
-    static constexpr float MOUNTAIN = 0.68f;
-    static constexpr float SNOW = 1.f;
-};
+inline namespace TileData {
+inline float WATER = 0.5f;
+inline float SAND = 0.54f;
+inline float GRASS = 0.61f;
+inline float MOUNTAIN = 0.68f;
+inline float SNOW = 1.f;
+}; // namespace TileData
 
 class World {
   public:

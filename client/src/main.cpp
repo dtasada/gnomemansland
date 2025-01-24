@@ -1,4 +1,3 @@
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_keycode.h>
@@ -9,10 +8,10 @@
 #include <toml++/impl/parse_error.hpp>
 #include <toml++/toml.hpp>
 
-#include "../include/game.hpp"
 #include "../include/engine.hpp"
+#include "../include/game.hpp"
 
-int main() {
+int main(int argc, char *argv[]) {
     srand(time(nullptr));
 
     Settings settings;
@@ -70,24 +69,6 @@ int main() {
 
         if (scancodes[SDL_SCANCODE_ESCAPE])
             game->running = false;
-
-        if (scancodes[SDL_SCANCODE_W])
-            p1.rect.y -= 10;
-        if (scancodes[SDL_SCANCODE_S])
-            p1.rect.y += 10;
-        if (scancodes[SDL_SCANCODE_A])
-            p1.rect.x -= 10;
-        if (scancodes[SDL_SCANCODE_D])
-            p1.rect.x += 10;
-
-        if (scancodes[SDL_SCANCODE_UP])
-            p2.rect.y -= 10;
-        if (scancodes[SDL_SCANCODE_DOWN])
-            p2.rect.y += 10;
-        if (scancodes[SDL_SCANCODE_LEFT])
-            p2.rect.x -= 10;
-        if (scancodes[SDL_SCANCODE_RIGHT])
-            p2.rect.x += 10;
 
         if (scancodes[SDL_SCANCODE_UP])
             game->world.render_scale += 1;

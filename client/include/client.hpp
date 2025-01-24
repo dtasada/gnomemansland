@@ -1,5 +1,7 @@
+#pragma once
+
 #include "../include/engine.hpp"
-#include <sqlite3.h>
+
 #include <string>
 #include <thread>
 
@@ -19,9 +21,9 @@ class Client {
 
   public:
     Client(Settings);
-    ~Client();
 
     int start(void);
+    void stop(void);
     void listen(void);
     void send(std::string message);
 };
