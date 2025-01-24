@@ -70,12 +70,17 @@ int main(int argc, char *argv[]) {
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_ESCAPE: game->running = false;
-                    case SDLK_UP:     game->world.render_scale *= 2; break;
+                        break;
+                    case SDLK_UP:
+                        game->world.render_scale *= 2;
+                        break;
                     case SDLK_DOWN:
-                        if (game->world.render_scale > 1) game->world.render_scale /= 2;
+                        game->world.render_scale /= 2;
                         break;
                 }
-            case SDL_MOUSEBUTTONDOWN: break;
+                printf("%f\n", game->world.render_scale);
+            case SDL_MOUSEBUTTONDOWN:
+                break;
         }
 
         if (scancodes[SDL_SCANCODE_ESCAPE]) game->running = false;

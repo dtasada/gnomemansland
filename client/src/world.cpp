@@ -36,7 +36,7 @@ World::World(Settings st, SDL_Renderer* renderer) :
         for (size_t x = 0; x < width; x++) {
             // get the terrain generation data form the settings file
             float freq      = st.world_generation.frequency;
-            float height     = 0.0f;
+            float height    = 0.0f;
             float amp       = 1.0f;
             float max_value = 0.0f;
 

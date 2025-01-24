@@ -1,5 +1,5 @@
 [video]
-resolution = [800, 800]
+resolution = [1280, 720]
 framerate = 60
 
 [multiplayer]
@@ -9,7 +9,7 @@ server_port = 2000
 server_polling_interval = 200
 
 [world_generation]
-resolution = [10, 10]
+resolution = [1280, 720]
 # seed = 53220
 octaves = 15
 persistence = 0.5
