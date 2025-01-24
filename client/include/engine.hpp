@@ -24,17 +24,6 @@ rgb     lerp_color(rgb c1, rgb c2, float m);
 int64_t randint64(int64_t min, int64_t max);
 float   rand01();
 
-inline namespace Color {
-    inline rgb WATER_LOW     = rgb(0, 0, 50);
-    inline rgb WATER_HIGH    = rgb(30, 110, 140);
-    inline rgb SAND_LOW      = rgb(237, 206, 178);
-    inline rgb SAND_HIGH     = rgb(255, 245, 193);
-    inline rgb GRASS_LOW     = rgb(0, 140, 90);
-    inline rgb GRASS_HIGH    = rgb(0, 120, 80);
-    inline rgb MOUNTAIN_LOW  = rgb(80, 80, 80);
-    inline rgb MOUNTAIN_HIGH = rgb(120, 120, 120);
-};
-
 struct Settings {
     struct {
         v2u      resolution       = v2u(1280, 720);

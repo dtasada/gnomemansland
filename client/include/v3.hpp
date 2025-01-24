@@ -11,7 +11,8 @@ template<typename T> struct v3 {
     v3(T v) : x(v), y(v), z(v) {}
     v3(void) : v3(0) {}
 	template<typename U>
-	v3(const v3<U>& other) : x(static_cast<T>(other.x)), 
+	v3(const v3<U>& other) :
+		x(static_cast<T>(other.x)), 
 		y(static_cast<T>(other.y)), 
 		z(static_cast<T>(other.z)) {}
 

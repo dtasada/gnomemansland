@@ -9,7 +9,6 @@
 
 Game::Game(Settings st) :
     target_framerate(st.video.target_framerate),
-    world(st),
     client(st),
     settings(st) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
@@ -27,6 +26,8 @@ Game::Game(Settings st) :
 
     if (!(renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)))
         exit_failure("Failed to create SDL Renderer");
+
+    world = World(st, renderer);
 
     running = true;
 }

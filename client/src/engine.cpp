@@ -20,4 +20,4 @@ float rand01() {
     return dis(gen);
 }
 
-rgb lerp_color(rgb c1, rgb c2, float m) { return (v3f)c1 + (v3f)(c2 - c1) * m; }
+rgb lerp_color(rgb c1, rgb c2, float m) { return (v3f)(c1) + ((v3f)c2 - (v3f)c1) * m; }
