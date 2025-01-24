@@ -9,10 +9,10 @@ class Client {
     bool connected;
 
     std::string host;
-    uint16_t port;
+    uint16_t    port;
 
-    IPaddress server_ip;
-    TCPsocket socket;
+    IPaddress        server_ip;
+    TCPsocket        socket;
     SDLNet_SocketSet socket_set;
 
     std::thread listen_thread;
@@ -22,7 +22,7 @@ class Client {
   public:
     Client(Settings);
 
-    int start(void);
+    int  start(void);
     void stop(void);
     void listen(void);
     void send(std::string message);

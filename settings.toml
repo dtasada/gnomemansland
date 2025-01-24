@@ -3,7 +3,7 @@ resolution = [800, 800]
 framerate = 60
 
 [multiplayer]
-enable = false
+enable = true
 server_host = "127.0.0.1"
 server_port = 2000
 

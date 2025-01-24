@@ -1,5 +1,8 @@
 #include "../include/client.hpp"
 #include "../include/engine.hpp"
+
+#include <climits>
+#include <cstdint>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -8,19 +11,17 @@
 
 Client::Client(Settings settings) {
     connected = false;
-    host = settings.multiplayer.server_host;
-    port = settings.multiplayer.server_port;
+    host      = settings.multiplayer.server_host;
+    port      = settings.multiplayer.server_port;
 
-    if (settings.multiplayer.enable)
-        start();
+    if (settings.multiplayer.enable) start();
 }
 
 void Client::stop() {
     connected = false;
-    if (listen_thread.joinable())
-        listen_thread.join();
+    if (listen_thread.joinable()) listen_thread.join();
 
-    std::clog << "Client closing network client" << std::endl;
+    std::clog << "Closing network client" << std::endl;
     SDLNet_TCP_Close(socket);
     SDLNet_Quit();
 }
@@ -50,24 +51,22 @@ int Client::start() {
 
     SDLNet_TCP_AddSocket(socket_set, socket);
 
-    connected = true;
+    connected     = true;
     listen_thread = std::thread(&Client::listen, this);
     return 0;
 }
 
 void Client::listen() {
-    std::vector<char> buffer(512);
+    std::vector<char> buffer(std::vector<char>().max_size());
 
     while (connected) {
         if (SDLNet_CheckSockets(socket_set, 1000) > 0 && SDLNet_SocketReady(socket)) {
-            int bytes_received = SDLNet_TCP_Recv(socket, buffer.data(), buffer.size());
+            size_t bytes_received = SDLNet_TCP_Recv(socket, buffer.data(), buffer.size());
             if (bytes_received > 0) {
                 std::string message(buffer.data(), bytes_received);
                 std::clog << "Received message: " << message << std::endl;
 
-                if (message.compare("ping")) {
-                    std::clog << "ping received" << std::endl;
-                }
+                if (message.compare("ping")) { std::clog << "ping received" << std::endl; }
             } else {
                 std::clog << "Connection lost or error while receiving data." << std::endl;
                 connected = false;
@@ -79,12 +78,12 @@ void Client::listen() {
 }
 
 void Client::send(std::string message) {
-    int len = message.length() + 1;
+    size_t len = message.length() + 1;
     if (SDLNet_TCP_Send(socket, (void *)message.c_str(), len) < len)
         std::cerr << "Failed to send message" << std::endl;
 }
 
 int Client::exit_failure(std::string message) {
     std::cerr << message << ": " << SDLNet_GetError() << std::endl;
-    return 1;
+    return EXIT_FAILURE;
 }
