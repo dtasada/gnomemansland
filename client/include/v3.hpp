@@ -1,37 +1,43 @@
 #pragma once
 
-struct v3 {
-    float x, y, z;
+#include <cstdint>
 
-    v3(float x, float y, float z);
-    v3(void);             // starts a vector to {0, 0, 0}
-    explicit v3(float v); // vector with all values set to v
+template<typename T> struct v3 {
+    T x, y, z;
 
-    v3 operator+(const v3 &) const;
-    v3 operator-(const v3 &) const;
-    v3 operator*(const v3 &) const;
-    v3 operator/(const v3 &) const;
+    // clang-format off
+    v3(T x, T y, T z) : x(x), y(y), z(z) {}
+    v3(T v) : x(v), y(v), z(v) {}
+    v3(void) : v3(0) {}
 
-    v3 operator+=(const v3 &);
-    v3 operator-=(const v3 &);
-    v3 operator*=(const v3 &);
-    v3 operator/=(const v3 &);
+    v3 operator+(const v3 &rhs) const { return v3(x + rhs.x, y + rhs.y, z + rhs.z); }
+    v3 operator-(const v3 &rhs) const { return v3(x - rhs.x, y - rhs.y, z - rhs.z); }
+    v3 operator*(const v3 &rhs) const { return v3(x * rhs.x, y * rhs.y, z * rhs.z); }
+    v3 operator/(const v3 &rhs) const { return v3(x / rhs.x, y / rhs.y, z / rhs.z); }
+    v3 operator+=(const v3 &rhs) { return *this = *this + rhs; }
+    v3 operator-=(const v3 &rhs) { return *this = *this - rhs; }
+    v3 operator*=(const v3 &rhs) { return *this = *this * rhs; }
+    v3 operator/=(const v3 &rhs) { return *this = *this / rhs; }
+    v3 operator-(const T &rhs) const { return v3(x - rhs, y - rhs, z - rhs); }
+    v3 operator+(const T &rhs) const { return v3(x + rhs, y + rhs, z + rhs); }
+    v3 operator*(const T &rhs) const { return v3(x * rhs, y * rhs, z * rhs); }
+    v3 operator/(const T &rhs) const { return v3(x / rhs, y / rhs, z / rhs); }
+    v3 operator*=(const T &rhs) { return *this = *this * rhs; }
+    v3 operator/=(const T &rhs) { return *this = *this / rhs; }
+    v3 operator+=(const T &rhs) { return *this = *this + rhs; }
+    v3 operator-=(const T &rhs) { return *this = *this - rhs; }
+    bool operator==(const v3 &rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
+    bool operator!=(const v3 &rhs) const { return !(*this == rhs); }
 
-    v3 operator-(const float &) const;
-    v3 operator+(const float &) const;
-    v3 operator*(const float &) const;
-    v3 operator/(const float &) const;
+    // clang-format on
 
-    v3 operator*=(const float &);
-    v3 operator/=(const float &);
-    v3 operator+=(const float &);
-    v3 operator-=(const float &);
-
-    bool operator==(const v3 &) const;
-    bool operator!=(const v3 &) const;
-
-    explicit operator float *() const;
+    operator T *() const { return new T[3]{x, y, z}; }
 
   public:
-    float volume() const;
+    float volume() const { return x * y * z; }
 };
+
+typedef v3<float>    v3f;
+typedef v3<int32_t>  v3i;
+typedef v3<uint32_t> v3u;
+typedef v3<uint8_t>  rgb;
