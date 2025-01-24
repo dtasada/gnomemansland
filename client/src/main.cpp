@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
 					.server_port = settings_t["multiplayer"]["server_port"].value_or(settings.multiplayer.server_port),
 				},
 				.world_generation = {
+					.resolution = settings_t["world_generation"]["resolution"].value_or(settings.world_generation.resolution),
 					.seed = settings_t["world_generation"]["seed"].value_or(settings.world_generation.seed),
 					.octaves = settings_t["world_generation"]["octaves"].value_or(settings.world_generation.octaves),
 					.persistence = settings_t["world_generation"]["persistence"].value_or(settings.world_generation.persistence),
@@ -52,28 +53,38 @@ int main(int argc, char *argv[]) {
     SDL_Event      event;
     const uint8_t *scancodes = SDL_GetKeyboardState(NULL);
 
-    game->world.update(game->renderer);
-
     while (game->running) {
         SDL_PollEvent(&event);
         SDL_PumpEvents();
 
         switch (event.type) {
-            case SDL_QUIT: game->running = false; break;
+            case SDL_QUIT:
+                game->running = false; break;
+
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE:
+                        game->running = false;
+                    case SDLK_UP:
+                        game->world.render_scale *= 2;
+                        break;
+                    case SDLK_DOWN:
+                        if (game->world.render_scale > 1)
+                            game->world.render_scale /= 2;
+                        break;
+                }
+            case SDL_MOUSEBUTTONDOWN:
+                break;
         }
 
-        if (scancodes[SDL_SCANCODE_ESCAPE]) game->running = false;
-
-        if (scancodes[SDL_SCANCODE_UP]) game->world.render_scale += 1;
-
-        if (scancodes[SDL_SCANCODE_DOWN] && game->world.render_scale > 1)
-            game->world.render_scale -= 1;
-
-        SDL_Delay(1000.0f / game->target_framerate);
+        SDL_RenderClear(game->renderer);
 
         game->world.update(game->renderer);
 
         SDL_RenderPresent(game->renderer);
+
+        SDL_Delay(1000.0f / game->target_framerate);
+
     }
 
     delete game;

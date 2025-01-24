@@ -21,5 +21,5 @@ float rand01() {
 }
 
 rgb lerp_color(rgb c1, rgb c2, float m) {
-    return c1 + rgb(m, m, m) * (c2 - c1);
+    return (v3f)(c1) + ((v3f)c2 - (v3f)c1) * m;
 }
