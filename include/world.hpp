@@ -11,7 +11,7 @@
 
 struct TileData {
     static constexpr float WATER = 0.5f;
-    static constexpr float SAND = 0.54f;
+    static constexpr float SAND = 0.53f;
     static constexpr float GRASS = 0.61f;
     static constexpr float MOUNTAIN = 0.68f;
     static constexpr float SNOW = 1.f;
@@ -22,9 +22,12 @@ class World {
     World(Settings);
 
     v2 size;
-    float z;
     float render_scale;
     std::vector<std::vector<v3>> map_data;
+
+    SDL_Surface* surf;
+    Uint32* pixels; 
+    SDL_Texture* tex;
 
     void draw(SDL_Renderer *);
     void update(SDL_Renderer *);
