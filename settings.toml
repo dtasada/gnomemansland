@@ -6,6 +6,7 @@ framerate = 60
 enable = true
 server_host = "127.0.0.1"
 server_port = 2000
+server_polling_interval = 200
 
 [world_generation]
 resolution = [800, 800]

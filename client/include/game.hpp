@@ -27,8 +27,7 @@ struct Game {
 struct Sprite {
     SDL_Texture *tex;
     SDL_Rect     rect;
-    v2f          vel;
-    v2f          acc;
+    v2f          vel, acc;
 
     Sprite(
         SDL_Renderer *renderer,
@@ -37,6 +36,7 @@ struct Sprite {
         v2f           vel = {0, 0},
         v2f           acc = {0, 0}
     );
+
     ~Sprite(void);
 
     void copy(SDL_Renderer *);

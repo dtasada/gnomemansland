@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <ostream>
 
 template<typename T> struct v3 {
     T x, y, z;
@@ -9,6 +10,11 @@ template<typename T> struct v3 {
     v3(T x, T y, T z) : x(x), y(y), z(z) {}
     v3(T v) : x(v), y(v), z(v) {}
     v3(void) : v3(0) {}
+	template<typename U>
+	v3(const v3<U>& other) : x(static_cast<T>(other.x)), 
+		y(static_cast<T>(other.y)), 
+		z(static_cast<T>(other.z)) {}
+
 
     v3 operator+(const v3 &rhs) const { return v3(x + rhs.x, y + rhs.y, z + rhs.z); }
     v3 operator-(const v3 &rhs) const { return v3(x - rhs.x, y - rhs.y, z - rhs.z); }
@@ -35,6 +41,11 @@ template<typename T> struct v3 {
 
   public:
     float volume() const { return x * y * z; }
+
+    friend std::ostream &operator<<(std::ostream &os, const v3 &v) {
+        os << "v3(" << v.x << ", " << v.y << ", " << v.z << ")";
+        return os;
+    }
 };
 
 typedef v3<float>    v3f;

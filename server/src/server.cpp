@@ -70,11 +70,19 @@ void Server::handle_clients() {
     // Listen for incoming messages from clients
     for (RemoteClient &client : client_connections) {
         if (SDLNet_SocketReady(client.socket)) {
-            std::vector<char> buffer(512);
-            int bytes_received = SDLNet_TCP_Recv(client.socket, buffer.data(), buffer.size());
+            std::vector<char> buffer(UINT32_MAX);
+            size_t bytes_received = SDLNet_TCP_Recv(client.socket, buffer.data(), buffer.size());
+
             if (bytes_received > 0) {
+                buffer[bytes_received] = '\0';
                 std::string message(buffer.data(), bytes_received);
-                std::clog << "Client says: " << message << std::endl;
+
+                size_t pos;
+                while ((pos = message.find('\n')) != std::string::npos) {
+                    std::string single_message = message.substr(0, pos);
+                    std::clog << "Client says: " << single_message << std::endl;
+                    message.erase(0, pos + 1);
+                }
             } else {
                 client.connected = false;
                 SDLNet_TCP_DelSocket(socket_set, client.socket);
@@ -91,7 +99,6 @@ void Server::handle_clients() {
         return !client.connected;
     });
 
-    // Send a ping to all clients
     send_to_all(database.dump());
 }
 
@@ -125,8 +132,6 @@ void Server::listen() {
 
 void Server::send_to_all(std::string message) {
     for (RemoteClient &client : client_connections) {
-        std::cout << "pinging" << std::endl;
-
         int len = message.length() + 1;
         if (SDLNet_TCP_Send(client.socket, (void *)message.c_str(), len) < len)
             std::cerr << "Failed to send message" << std::endl;

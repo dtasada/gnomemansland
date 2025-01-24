@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <ostream>
 
 template<typename T> struct v2 {
     T x, y;
@@ -35,6 +36,11 @@ template<typename T> struct v2 {
 
   public:
     float volume() const { return x * y; }
+
+    friend std::ostream &operator<<(std::ostream &os, const v2 &v) {
+        os << "v2(" << v.x << ", " << v.y << ")";
+        return os;
+    }
 };
 
 typedef v2<float>    v2f;

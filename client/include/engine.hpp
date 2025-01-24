@@ -20,9 +20,8 @@
 #include <cstdint>
 #include <string>
 
-int64_t randint64(int64_t min, int64_t max);
-float   rand01();
 rgb     lerp_color(rgb c1, rgb c2, float m);
+int64_t randint64(int64_t min, int64_t max);
 float   rand01();
 
 inline namespace Color {
@@ -43,14 +42,15 @@ struct Settings {
     } video;
 
     struct {
-        bool        enable      = true;
-        std::string server_host = "127.0.0.1";
-        uint16_t    server_port = 4444;
+        bool        enable                  = true;
+        std::string server_host             = "127.0.0.1";
+        uint16_t    server_port             = 4444;
+        uint32_t    server_polling_interval = 200;
     } multiplayer;
 
     struct {
         v2u      resolution  = v2u(800, 800);
-        uint32_t seed        = randint64(0, SDL_MAX_UINT32);
+        uint32_t seed        = randint64(0, UINT32_MAX);
         int      octaves     = 10;
         float    persistence = 0.5f;
         float    lacunarity  = 2.0f;

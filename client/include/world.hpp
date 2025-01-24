@@ -3,6 +3,7 @@
 #include "../include/engine.hpp"
 #include "../include/v2.hpp"
 
+#include <csignal>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
@@ -14,7 +15,7 @@ inline namespace TileData {
     inline float GRASS    = 0.61f;
     inline float MOUNTAIN = 0.68f;
     inline float SNOW     = 1.f;
-};  // namespace TileData
+};
 
 class World {
   public:

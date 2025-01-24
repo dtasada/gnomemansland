@@ -6,15 +6,14 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <thread>
 #include <vector>
 
-Client::Client(Settings settings) {
+Client::Client(Settings st) {
     connected = false;
-    host      = settings.multiplayer.server_host;
-    port      = settings.multiplayer.server_port;
+    host      = st.multiplayer.server_host;
+    port      = st.multiplayer.server_port;
 
-    if (settings.multiplayer.enable) start();
+    if (st.multiplayer.enable) start();
 }
 
 void Client::stop() {
@@ -26,7 +25,7 @@ void Client::stop() {
     SDLNet_Quit();
 }
 
-int Client::start() {
+int Client::start(void) {
     if (SDLNet_Init() < 0) {
         return exit_failure("Failed to initialize SDL_net");
     } else {
@@ -56,30 +55,28 @@ int Client::start() {
     return 0;
 }
 
-void Client::listen() {
-    std::vector<char> buffer(std::vector<char>().max_size());
+void Client::listen(void) {
+    std::vector<char> buffer(UINT32_MAX);
 
     while (connected) {
         if (SDLNet_CheckSockets(socket_set, 1000) > 0 && SDLNet_SocketReady(socket)) {
             size_t bytes_received = SDLNet_TCP_Recv(socket, buffer.data(), buffer.size());
             if (bytes_received > 0) {
                 std::string message(buffer.data(), bytes_received);
-                std::clog << "Received message: " << message << std::endl;
-
-                if (message.compare("ping")) { std::clog << "ping received" << std::endl; }
+                std::clog << "Server says: " << message << std::endl;
             } else {
                 std::clog << "Connection lost or error while receiving data." << std::endl;
                 connected = false;
             }
         }
 
-        SDL_Delay(100);
+        SDL_Delay(200);
     }
 }
 
 void Client::send(std::string message) {
-    size_t len = message.length() + 1;
-    if (SDLNet_TCP_Send(socket, (void *)message.c_str(), len) < len)
+    message += "\n";
+    if (SDLNet_TCP_Send(socket, message.c_str(), message.length()) < message.length())
         std::cerr << "Failed to send message" << std::endl;
 }
 

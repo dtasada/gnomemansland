@@ -7,7 +7,9 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_scancode.h>
+#include <SDL2/SDL_timer.h>
 #include <toml++/impl/parse_error.hpp>
 #include <toml++/toml.hpp>
 
@@ -30,8 +32,13 @@ int main(int argc, char *argv[]) {
 					.enable = settings_t["multiplayer"]["enable"].value_or(settings.multiplayer.enable),
 					.server_host = settings_t["multiplayer"]["server_host"].value_or(settings.multiplayer.server_host),
 					.server_port = settings_t["multiplayer"]["server_port"].value_or(settings.multiplayer.server_port),
+					.server_polling_interval = settings_t["multiplayer"]["server_polling_interval"].value_or(settings.multiplayer.server_polling_interval),
 				},
 				.world_generation = {
+					.resolution = v2u(
+						settings_t["world_generation"]["resolution"][0].value_or(settings.world_generation.resolution.x),
+						settings_t["world_generation"]["resolution"][1].value_or(settings.world_generation.resolution.y)
+					),
 					.seed = settings_t["world_generation"]["seed"].value_or(settings.world_generation.seed),
 					.octaves = settings_t["world_generation"]["octaves"].value_or(settings.world_generation.octaves),
 					.persistence = settings_t["world_generation"]["persistence"].value_or(settings.world_generation.persistence),
@@ -46,14 +53,15 @@ int main(int argc, char *argv[]) {
 
     Game *game = new Game(settings);
 
-    Sprite p1(game->renderer, "./resources/grass.png", {0, 0, 100, 100});
-    Sprite p2(game->renderer, "./resources/grass.png", {0, 200, 200, 200});
+    Sprite local_player(game->renderer, "./resources/grass.png", {0, 0, 100, 100});
+    Sprite remote_player(game->renderer, "./resources/grass.png", {0, 200, 200, 200});
 
     SDL_Event      event;
     const uint8_t *scancodes = SDL_GetKeyboardState(NULL);
 
     game->world.update(game->renderer);
 
+    uint32_t last_server_poll = SDL_GetTicks();
     while (game->running) {
         SDL_PollEvent(&event);
         SDL_PumpEvents();
@@ -63,13 +71,22 @@ int main(int argc, char *argv[]) {
         }
 
         if (scancodes[SDL_SCANCODE_ESCAPE]) game->running = false;
-
-        if (scancodes[SDL_SCANCODE_UP]) game->world.render_scale += 1;
-
+        /* if (scancodes[SDL_SCANCODE_UP]) game->world.render_scale += 1;
         if (scancodes[SDL_SCANCODE_DOWN] && game->world.render_scale > 1)
-            game->world.render_scale -= 1;
+            game->world.render_scale -= 1; */
+
+        if (scancodes[SDL_SCANCODE_W]) local_player.rect.y -= 1;
+        if (scancodes[SDL_SCANCODE_S]) local_player.rect.y += 1;
+        if (scancodes[SDL_SCANCODE_A]) local_player.rect.x -= 1;
+        if (scancodes[SDL_SCANCODE_D]) local_player.rect.x += 1;
 
         SDL_Delay(1000.0f / game->target_framerate);
+
+        uint32_t now = SDL_GetTicks();
+        if (now - last_server_poll > game->settings.multiplayer.server_polling_interval) {
+            last_server_poll = now;
+        }
+        if (scancodes[SDL_SCANCODE_SPACE]) { game->client.send("{'request': 'update'}"); }
 
         game->world.update(game->renderer);
 
