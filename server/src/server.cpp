@@ -125,6 +125,8 @@ void Server::listen() {
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        SDL_Delay(200);
     }
 
     SDLNet_FreeSocketSet(socket_set);

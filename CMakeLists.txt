@@ -36,6 +36,8 @@ FetchContent_Declare(toml		GIT_REPOSITORY https://github.com/marzer/tomlplusplus
 
 FetchContent_MakeAvailable(SDL2 SDL2_image SDL2_net json toml)
 
+find_package(OpenMP REQUIRED)
+
 foreach(TARGET client server)
 	target_include_directories(${TARGET} PRIVATE
 		${SDL2_INCLUDE_DIR}
@@ -51,5 +53,6 @@ foreach(TARGET client server)
 		SDL2_image::SDL2_image
 		SDL2_net::SDL2_net
 		${json_LIBRARIES}
+		OpenMP::OpenMP_CXX
 	)
 endforeach()
