@@ -21,10 +21,13 @@ class World {
     World(Settings);
 
     v2u   size;
-    float z;
     float render_scale;
 
     std::vector<std::vector<rgb>> map_data;
+
+    SDL_Surface *surf;
+    Uint32      *pixels;
+    SDL_Texture *tex;
 
     void draw(SDL_Renderer *);
     void update(SDL_Renderer *);

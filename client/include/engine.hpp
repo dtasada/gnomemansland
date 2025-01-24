@@ -34,7 +34,7 @@ inline namespace Color {
     inline rgb GRASS_HIGH    = rgb(0, 120, 80);
     inline rgb MOUNTAIN_LOW  = rgb(80, 80, 80);
     inline rgb MOUNTAIN_HIGH = rgb(120, 120, 120);
-};  // namespace Color
+};
 
 struct Settings {
     struct {

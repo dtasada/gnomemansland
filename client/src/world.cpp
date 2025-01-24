@@ -8,7 +8,6 @@
 World::World(Settings st) : size(st.world_generation.resolution) {
     map_data     = std::vector<std::vector<rgb>>(size.y, std::vector<rgb>(size.x));
     render_scale = 1.0f;
-    z            = 0;
 
     uint32_t seed = st.world_generation.seed;
     std::cout << "Seed: " << seed << std::endl;
@@ -18,21 +17,30 @@ World::World(Settings st) : size(st.world_generation.resolution) {
     const float pers    = st.world_generation.persistence;
     const float lac     = st.world_generation.lacunarity;
 
+    surf = SDL_CreateRGBSurfaceWithFormat(
+        0,
+        st.video.resolution.x,
+        st.video.resolution.y,
+        32,
+        SDL_PIXELFORMAT_RGBA8888
+    );
+    pixels = static_cast<Uint32 *>(surf->pixels);
+
     for (size_t y = 0; y < size.y; y++) {
         for (size_t x = 0; x < size.x; x++) {
-            z += 3 * pow(10, -7);
-
+            // get the terrain generation data form the settings file
             float freq      = st.world_generation.frequency;
             float total     = 0.0f;
             float amp       = 1.0f;
             float max_value = 0.0f;
 
+            // calculate the noise octaves
             float nx, ny;
             for (int i = 0; i < octaves; i++) {
                 nx = x * (freq * 1);
                 ny = y * (freq * 1);
 
-                total += amp * pn.noise(nx, ny, z);
+                total += amp * pn.noise(nx, ny, 0);
 
                 max_value += amp;
                 amp *= pers;
@@ -41,6 +49,7 @@ World::World(Settings st) : size(st.world_generation.resolution) {
             // normalize total height to (0, 1)
             total = (total + max_value) / (max_value * 2);
 
+            // create linearly interpolated colors for terrain
             rgb tile;
             if (total <= TileData::WATER) {
                 tile = lerp_color(Color::WATER_LOW, Color::WATER_HIGH, total / TileData::WATER);
@@ -65,9 +74,14 @@ World::World(Settings st) : size(st.world_generation.resolution) {
             } else {
                 tile = rgb(255, 255, 255);
             }
-            map_data[y][x] = tile;
+            // color the surface with given tile
+            pixels[y * 800 + x] = SDL_MapRGBA(surf->format, tile.x, tile.y, tile.z, 255);
+            // set the data
+            map_data[y][x]      = tile;
         }
     }
+
+    // tex = SDL_CreateTextureFromSurface();
 }
 
 void World::update(SDL_Renderer *renderer) { draw(renderer); }

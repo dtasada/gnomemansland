@@ -9,7 +9,7 @@ server_port = 2000
 
 [world_generation]
 resolution = [800, 800]
-seed = 53220
+# seed = 53220
 octaves = 15
 persistence = 0.5
 lacunarity = 2
