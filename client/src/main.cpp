@@ -66,28 +66,27 @@ int main(int argc, char *argv[]) {
 
         switch (event.type) {
             case SDL_QUIT: game->running = false; break;
-
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
-                    case SDLK_ESCAPE: game->running = false;
-                        break;
-                    case SDLK_UP:
-                        game->world.render_scale *= 2;
-                        break;
-                    case SDLK_DOWN:
-                        game->world.render_scale /= 2;
-                        break;
+                    case SDLK_ESCAPE: game->running = false; break;
+                    case SDLK_UP:     game->world.render_scale *= 2; break;
+                    case SDLK_DOWN:   game->world.render_scale /= 2; break;
                 }
-                printf("%f\n", game->world.render_scale);
-            case SDL_MOUSEBUTTONDOWN:
                 break;
+            case SDL_MOUSEBUTTONDOWN:
+                game->moving = true;
+                break;
+            case SDL_MOUSEBUTTONUP:
+                game->moving = false;
+                break;
+            case SDL_MOUSEMOTION:
+                if (game->moving) {
+                    game->scroll.x += event.motion.xrel;
+                    game->scroll.y += event.motion.yrel;
+                }
         }
 
         if (scancodes[SDL_SCANCODE_ESCAPE]) game->running = false;
-        /* if (scancodes[SDL_SCANCODE_UP]) game->world.render_scale += 1;
-        if (scancodes[SDL_SCANCODE_DOWN] && game->world.render_scale > 1)
-            game->world.render_scale -= 1; */
-
         if (scancodes[SDL_SCANCODE_W]) local_player.rect.y -= 1;
         if (scancodes[SDL_SCANCODE_S]) local_player.rect.y += 1;
         if (scancodes[SDL_SCANCODE_A]) local_player.rect.x -= 1;
@@ -101,7 +100,7 @@ int main(int argc, char *argv[]) {
         if (scancodes[SDL_SCANCODE_SPACE]) { game->client.send("{'request': 'update'}"); }
 
         SDL_RenderClear(game->renderer);
-        game->world.update(game->renderer);
+        game->world.draw(game->renderer, game->scroll);
         SDL_RenderPresent(game->renderer);
 
         SDL_Delay(1000.0f / game->target_framerate);

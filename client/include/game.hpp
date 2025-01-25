@@ -15,6 +15,8 @@ struct Game {
     float         target_framerate;
     float         dt;
     bool          running;
+    bool moving;
+    v2f scroll;
 
     World    world;
     Client   client;

@@ -43,6 +43,6 @@ struct Settings {
         int      octaves     = 10;
         float    persistence = 0.5f;
         float    lacunarity  = 2.0f;
-        float    frequency   = 0.004f;
+        float    frequency   = 0.003f;
     } world_generation;
 };

@@ -28,6 +28,8 @@ Game::Game(Settings st) :
         exit_failure("Failed to create SDL Renderer");
 
     world = World(st, renderer);
+    moving = false;
+    scroll = v2f(0, 0);
 
     running = true;
 }

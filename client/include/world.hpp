@@ -14,8 +14,8 @@ inline namespace Color {
     inline rgb WATER_HIGH    = rgb(30, 110, 140);
     inline rgb SAND_LOW      = rgb(237, 206, 178);
     inline rgb SAND_HIGH     = rgb(255, 245, 193);
-    inline rgb GRASS_LOW    = rgb(10, 155, 104);
-    inline rgb GRASS_HIGH     = rgb(0, 120, 80);
+    inline rgb GRASS_LOW     = rgb(10, 155, 104);
+    inline rgb GRASS_HIGH    = rgb(0, 120, 80);
     inline rgb MOUNTAIN_LOW  = rgb(80, 80, 80);
     inline rgb MOUNTAIN_HIGH = rgb(120, 120, 120);
 };
@@ -31,7 +31,7 @@ inline namespace TileData {
 class World {
   public:
     World() = default;
-    World(Settings, SDL_Renderer*);
+    World(Settings, SDL_Renderer *);
 
     v2u   size;
     float render_scale;
@@ -39,13 +39,12 @@ class World {
     std::vector<std::vector<rgb>> map_data;
 
     SDL_Surface *surf;
-    Uint32      *pixels;
+    uint32_t    *pixels;
     SDL_Texture *tex;
-    SDL_Rect rect;
+    SDL_Rect     rect;
 
     int width;
     int height;
 
-    void draw(SDL_Renderer *);
-    void update(SDL_Renderer *);
+    void draw(SDL_Renderer *, v2f);
 };

@@ -3,7 +3,7 @@ resolution = [1280, 720]
 framerate = 60
 
 [multiplayer]
-enable = true
+enable = false
 server_host = "127.0.0.1"
 server_port = 2000
 server_polling_interval = 200
@@ -14,4 +14,4 @@ resolution = [1280, 720]
 octaves = 15
 persistence = 0.5
 lacunarity = 2
-frequency = 0.004
+frequency = 1.0

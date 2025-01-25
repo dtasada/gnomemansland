@@ -4,9 +4,9 @@
 
 #include <cstddef>
 #include <iostream>
+// #include <omp.h>
 
-World::World(Settings st, SDL_Renderer* renderer) :
-    size(st.world_generation.resolution) {
+World::World(Settings st, SDL_Renderer *renderer) : size(st.world_generation.resolution) {
     map_data     = std::vector<std::vector<rgb>>(size.y, std::vector<rgb>(size.x));
     render_scale = 1.0f;
 
@@ -18,24 +18,19 @@ World::World(Settings st, SDL_Renderer* renderer) :
     const float pers    = st.world_generation.persistence;
     const float lac     = st.world_generation.lacunarity;
 
-    width = st.world_generation.resolution.x;
+    width  = st.world_generation.resolution.x;
     height = st.world_generation.resolution.y;
 
     // create the map surface
-    surf = SDL_CreateRGBSurfaceWithFormat(
-        0,
-        width,
-        height,
-        32,
-        SDL_PIXELFORMAT_RGBA8888
-    );
+    surf = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA8888);
 
-    pixels = static_cast<Uint32 *>(surf->pixels);
+    pixels = static_cast<uint32_t *>(surf->pixels);
 
+// #pragma omp parallel for collapse(2)
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
             // get the terrain generation data form the settings file
-            float freq      = st.world_generation.frequency;
+            float freq      = 7.68f * st.world_generation.frequency / width;
             float height    = 0.0f;
             float amp       = 1.0f;
             float max_value = 0.0f;
@@ -61,39 +56,48 @@ World::World(Settings st, SDL_Renderer* renderer) :
             if (height <= TileData::WATER) {
                 tile = lerp_color(Color::WATER_LOW, Color::WATER_HIGH, height / TileData::WATER);
             } else if (height <= TileData::SAND) {
-                tile = lerp_color(Color::SAND_LOW, Color::SAND_HIGH, (height - TileData::WATER) / (TileData::SAND - TileData::WATER));
+                tile = lerp_color(
+                    Color::SAND_LOW,
+                    Color::SAND_HIGH,
+                    (height - TileData::WATER) / (TileData::SAND - TileData::WATER)
+                );
             } else if (height <= TileData::GRASS) {
-                tile = lerp_color(Color::GRASS_LOW, Color::GRASS_HIGH, (height - TileData::SAND) / (TileData::GRASS - TileData::SAND));
+                tile = lerp_color(
+                    Color::GRASS_LOW,
+                    Color::GRASS_HIGH,
+                    (height - TileData::SAND) / (TileData::GRASS - TileData::SAND)
+                );
             } else if (height <= TileData::MOUNTAIN) {
-                tile = lerp_color(Color::MOUNTAIN_LOW, Color::MOUNTAIN_HIGH, (height - TileData::GRASS) / (TileData::MOUNTAIN - TileData::GRASS));
+                tile = lerp_color(
+                    Color::MOUNTAIN_LOW,
+                    Color::MOUNTAIN_HIGH,
+                    (height - TileData::GRASS) / (TileData::MOUNTAIN - TileData::GRASS)
+                );
             } else {
                 tile = rgb(240, 240, 240);
             }
-            
+
 
             // color the surface with given tile
             pixels[y * width + x] = SDL_MapRGBA(surf->format, tile.x, tile.y, tile.z, 255);
 
             // set the data
-            map_data[y][x]      = tile;
+            map_data[y][x] = tile;
         }
     }
 
-    tex = SDL_CreateTextureFromSurface(renderer, surf);
+    tex    = SDL_CreateTextureFromSurface(renderer, surf);
     rect.x = 0;
     rect.y = 0;
     rect.w = width;
     rect.h = height;
 }
 
-void World::update(SDL_Renderer *renderer) {
-    draw(renderer);
-}
-
-void World::draw(SDL_Renderer *renderer) {
+void World::draw(SDL_Renderer *renderer, v2f scroll) {
+    rect.x = scroll.x;
+    rect.y = scroll.y;
     rect.w = width * render_scale;
     rect.h = height * render_scale;
-    // std::cout << rect.w << std::endl;
 
     SDL_RenderCopy(renderer, tex, NULL, &rect);
 }
