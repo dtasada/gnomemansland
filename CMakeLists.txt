@@ -37,6 +37,10 @@ function(setup_openmp target)
         find_package(OpenMP REQUIRED)
         target_link_libraries(${target} PRIVATE OpenMP::OpenMP_CXX)
     endif()
+
+	if(MSVC)
+		add_compile_options(/openmp /std:c++latest)
+	endif()
 endfunction()
 
 # Fetch dependencies
