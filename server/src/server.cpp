@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 RemoteClient::RemoteClient(TCPsocket socket, IPaddress address) :
     socket(socket),

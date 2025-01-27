@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-// #include <omp.h>
+#include <omp.h>
 
 World::World(Settings st, SDL_Renderer *renderer) : size(st.world_generation.resolution) {
     map_data     = std::vector<std::vector<rgb>>(size.y, std::vector<rgb>(size.x));
@@ -22,7 +22,7 @@ World::World(Settings st, SDL_Renderer *renderer) : size(st.world_generation.res
 
     pixels = static_cast<uint32_t *>(surf->pixels);
 
-    // #pragma omp parallel for collapse(2)
+    #pragma omp parallel for collapse(2)
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
             // get the terrain generation data form the settings file
