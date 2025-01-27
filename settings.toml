@@ -3,10 +3,10 @@ resolution = [1280, 720]
 framerate = 60
 
 [multiplayer]
-enable = false
+enable = true
 server_host = "127.0.0.1"
 server_port = 2000
-server_polling_interval = 200
+server_polling_interval = 10
 
 [world_generation]
 resolution = [1280, 720]

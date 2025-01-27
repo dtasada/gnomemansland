@@ -2,8 +2,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <thread>
-#include <vector>
 
 RemoteClient::RemoteClient(TCPsocket socket, IPaddress address) :
     socket(socket),
@@ -34,7 +32,7 @@ Server::Server(uint16_t port) : port(port) {
     } else {
         std::clog << database_path << " doesn't exist. Creating new database." << std::endl;
         database = {
-            {"clients", json::array()},
+            {"players", json::array()},
         };
         std::ofstream new_file(database_path);
         new_file << database.dump(4);
@@ -47,6 +45,7 @@ Server::Server(uint16_t port) : port(port) {
 
 Server::~Server() {
     running = false;
+    SDLNet_FreeSocketSet(socket_set);
     SDLNet_TCP_Close(socket);
     SDLNet_Quit();
     std::clog << "Closed SDL_net." << std::endl;
@@ -70,18 +69,16 @@ void Server::handle_clients() {
     // Listen for incoming messages from clients
     for (RemoteClient &client : client_connections) {
         if (SDLNet_SocketReady(client.socket)) {
-            std::vector<char> buffer(UINT32_MAX);
+            std::vector<char> buffer(4096);
             size_t bytes_received = SDLNet_TCP_Recv(client.socket, buffer.data(), buffer.size());
 
-            if (bytes_received > 0) {
-                buffer[bytes_received] = '\0';
-                std::string message(buffer.data(), bytes_received);
+            if (bytes_received > 0 && bytes_received < buffer.size()) {
+                std::stringstream message_stream(std::string(buffer.data(), bytes_received));
+                std::string       message;
+                std::vector<std::string> messages;
 
-                size_t pos;
-                while ((pos = message.find('\n')) != std::string::npos) {
-                    std::string single_message = message.substr(0, pos);
-                    std::clog << "Client says: " << single_message << std::endl;
-                    message.erase(0, pos + 1);
+                while (std::getline(message_stream, message, '\n')) {
+                    std::clog << "Client says: " << message << std::endl;
                 }
             } else {
                 client.connected = false;
@@ -99,43 +96,38 @@ void Server::handle_clients() {
         return !client.connected;
     });
 
-    send_to_all(database.dump());
+    // send_to_all(database.dump());
 }
 
 void Server::listen() {
     std::clog << "SDL_net server listening on port " << port << std::endl;
 
     // Create a socket set for the server and clients
-    socket_set = SDLNet_AllocSocketSet(32);
-    if (!socket_set) exit_failure("Failed to allocate socket set");
+    const int max_sockets = 32;
+    if (!(socket_set = SDLNet_AllocSocketSet(max_sockets)))
+        exit_failure("Failed to allocate socket set");
 
     SDLNet_TCP_AddSocket(socket_set, socket);
 
+    const uint32_t timeout = 10;
     while (running) {
         handle_clients();
 
-        if (SDLNet_CheckSockets(socket_set, 1000) <= 0) { continue; }
-
-        if (SDLNet_SocketReady(socket)) {
+        if (SDLNet_CheckSockets(socket_set, timeout) > 0 && SDLNet_SocketReady(socket)) {
             TCPsocket client_socket = SDLNet_TCP_Accept(socket);
             if (client_socket) {
                 IPaddress *client_ip = SDLNet_TCP_GetPeerAddress(client_socket);
                 if (client_ip) new_client(client_socket, *client_ip);
             }
         }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-        SDL_Delay(200);
     }
-
-    SDLNet_FreeSocketSet(socket_set);
 }
 
 void Server::send_to_all(std::string message) {
+    message += "\n";
     for (RemoteClient &client : client_connections) {
-        int len = message.length() + 1;
-        if (SDLNet_TCP_Send(client.socket, (void *)message.c_str(), len) < len)
+        std::clog << "Sending to client: " << message << std::endl;
+        if (SDLNet_TCP_Send(client.socket, message.c_str(), message.length()) < message.length())
             std::cerr << "Failed to send message" << std::endl;
     }
 }
@@ -144,7 +136,7 @@ void Server::new_client(TCPsocket client_socket, IPaddress client_address) {
     SDLNet_TCP_AddSocket(socket_set, client_socket);
 
     client_connections.emplace_back(client_socket, client_address);
-    database["clients"].push_back({
+    database["players"].push_back({
         {"host", client_address.host},
         {"port", client_address.port}
     });

@@ -8,7 +8,6 @@
 #    include <SDL_net.h>
 #endif
 
-#include <mutex>
 #include <string>
 #include <vector>
 
@@ -31,7 +30,6 @@ class Server {
     TCPsocket                 socket;
     SDLNet_SocketSet          socket_set;
     std::vector<RemoteClient> client_connections;
-    std::mutex                client_mutex;
 
     void exit_failure(std::string message);
     void new_client(TCPsocket socket, IPaddress address);

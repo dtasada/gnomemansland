@@ -10,6 +10,7 @@ class Client {
 
     std::string host;
     uint16_t    port;
+    uint32_t    timeout;
 
     IPaddress        server_ip;
     TCPsocket        socket;
@@ -17,12 +18,13 @@ class Client {
 
     std::thread listen_thread;
 
-    int exit_failure(std::string message);
+    void exit_failure(std::string message);
 
   public:
     Client(Settings);
+    ~Client(void);
 
-    int  start(void);
+    void start(void);
     void stop(void);
     void listen(void);
     void send(std::string message);

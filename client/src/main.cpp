@@ -1,16 +1,7 @@
 #include "../include/engine.hpp"
 #include "../include/game.hpp"
 
-#include <cstdint>
-#include <cstdlib>
 #include <iostream>
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_keyboard.h>
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_scancode.h>
-#include <SDL2/SDL_timer.h>
-#include <toml++/impl/parse_error.hpp>
 #include <toml++/toml.hpp>
 
 int main(int argc, char *argv[]) {
@@ -71,19 +62,17 @@ int main(int argc, char *argv[]) {
                     case SDLK_ESCAPE: game->running = false; break;
                     case SDLK_UP:     game->world.render_scale *= 2; break;
                     case SDLK_DOWN:   game->world.render_scale /= 2; break;
+                    case SDLK_SPACE:  game->client.send("{'request': 'update'}"); break;
                 }
                 break;
-            case SDL_MOUSEBUTTONDOWN:
-                game->moving = true;
-                break;
-            case SDL_MOUSEBUTTONUP:
-                game->moving = false;
-                break;
+            case SDL_MOUSEBUTTONDOWN: game->moving = true; break;
+            case SDL_MOUSEBUTTONUP:   game->moving = false; break;
             case SDL_MOUSEMOTION:
                 if (game->moving) {
                     game->scroll.x += event.motion.xrel;
                     game->scroll.y += event.motion.yrel;
                 }
+                break;
         }
 
         if (scancodes[SDL_SCANCODE_ESCAPE]) game->running = false;
@@ -92,12 +81,10 @@ int main(int argc, char *argv[]) {
         if (scancodes[SDL_SCANCODE_A]) local_player.rect.x -= 1;
         if (scancodes[SDL_SCANCODE_D]) local_player.rect.x += 1;
 
-
         uint32_t now = SDL_GetTicks();
         if (now - last_server_poll > game->settings.multiplayer.server_polling_interval) {
             last_server_poll = now;
         }
-        if (scancodes[SDL_SCANCODE_SPACE]) { game->client.send("{'request': 'update'}"); }
 
         SDL_RenderClear(game->renderer);
         game->world.draw(game->renderer, game->scroll);
@@ -106,6 +93,5 @@ int main(int argc, char *argv[]) {
         SDL_Delay(1000.0f / game->target_framerate);
     }
 
-    delete game;
     return EXIT_SUCCESS;
 }

@@ -6,11 +6,9 @@
 #include <iostream>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
 
-Game::Game(Settings st) :
-    target_framerate(st.video.target_framerate),
-    client(st),
-    settings(st) {
+Game::Game(Settings st) : target_framerate(st.video.target_framerate), client(st), settings(st) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
         exit_failure("Failed to initialize SDL");
 
@@ -20,14 +18,14 @@ Game::Game(Settings st) :
               SDL_WINDOWPOS_UNDEFINED,
               st.video.resolution.x,
               st.video.resolution.y,
-              0
+              0 // SDL_WINDOW_RESIZABLE
           )))
         exit_failure("Failed to create SDL Window");
 
     if (!(renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)))
         exit_failure("Failed to create SDL Renderer");
 
-    world = World(st, renderer);
+    world  = World(st, renderer);
     moving = false;
     scroll = v2f(0, 0);
 
@@ -35,7 +33,6 @@ Game::Game(Settings st) :
 }
 
 Game::~Game() {
-    client.stop();
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();
@@ -57,5 +54,5 @@ void Sprite::copy(SDL_Renderer *renderer) { SDL_RenderCopy(renderer, tex, NULL, 
 int exit_failure(std::string message) {
     std::cerr << message << ": " << SDL_GetError() << std::endl;
     SDL_Quit();
-    return EXIT_FAILURE;
+    std::exit(EXIT_FAILURE);
 }

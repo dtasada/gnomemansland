@@ -2,8 +2,8 @@
 #include "../include/perlin.hpp"
 #include "../include/world.hpp"
 
-#include <cstddef>
 #include <iostream>
+
 // #include <omp.h>
 
 World::World(Settings st, SDL_Renderer *renderer) : size(st.world_generation.resolution) {
@@ -14,10 +14,6 @@ World::World(Settings st, SDL_Renderer *renderer) : size(st.world_generation.res
     std::cout << "Seed: " << seed << std::endl;
     PerlinNoise pn(seed);
 
-    const int   octaves = st.world_generation.octaves;
-    const float pers    = st.world_generation.persistence;
-    const float lac     = st.world_generation.lacunarity;
-
     width  = st.world_generation.resolution.x;
     height = st.world_generation.resolution.y;
 
@@ -26,7 +22,7 @@ World::World(Settings st, SDL_Renderer *renderer) : size(st.world_generation.res
 
     pixels = static_cast<uint32_t *>(surf->pixels);
 
-// #pragma omp parallel for collapse(2)
+    // #pragma omp parallel for collapse(2)
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
             // get the terrain generation data form the settings file
@@ -37,15 +33,15 @@ World::World(Settings st, SDL_Renderer *renderer) : size(st.world_generation.res
 
             // calculate the noise octaves
             float nx, ny;
-            for (int i = 0; i < octaves; i++) {
+            for (int i = 0; i < st.world_generation.octaves; i++) {
                 nx = x * (freq * 1);
                 ny = y * (freq * 1);
 
                 height += amp * pn.noise(nx, ny, 0);
 
                 max_value += amp;
-                amp *= pers;
-                freq *= lac;
+                amp *= st.world_generation.persistence;
+                freq *= st.world_generation.lacunarity;
             }
             // normalize total height to (0, 1)
             height = (height + max_value) / (max_value * 2);
