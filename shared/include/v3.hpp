@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <nlohmann/json.hpp>
 #include <ostream>
 
 template<typename T> struct v3 {
@@ -35,17 +36,29 @@ template<typename T> struct v3 {
     v3 operator-=(const T &rhs) { return *this = *this - rhs; }
     bool operator==(const v3 &rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
     bool operator!=(const v3 &rhs) const { return !(*this == rhs); }
+	T &operator[](int i) { return i == 0 ? x : i == 1 ? y : z; }
 
     // clang-format on
 
     operator T *() const { return new T[3]{x, y, z}; }
 
+
   public:
-    float volume() const { return x * y * z; }
+    float length() const { return x * y * z; }
 
     friend std::ostream &operator<<(std::ostream &os, const v3 &v) {
         os << "v3(" << v.x << ", " << v.y << ", " << v.z << ")";
         return os;
+    }
+
+    friend void to_json(nlohmann::json &j, const v3 &vec) {
+        j = nlohmann::json{vec.x, vec.y, vec.z};
+    }
+
+    friend void from_json(const nlohmann::json &j, v3 &vec) {
+        vec.x = j.at(0);
+        vec.y = j.at(1);
+        vec.z = j.at(2);
     }
 };
 

@@ -8,10 +8,10 @@
 #    include <SDL_net.h>
 #endif
 
+#include "../include/world_gen.hpp"
+
 #include <string>
 #include <vector>
-
-using json = nlohmann::json;
 
 struct RemoteClient {
     TCPsocket socket;
@@ -35,13 +35,16 @@ class Server {
     void new_client(TCPsocket socket, IPaddress address);
 
   public:
-    Server(uint16_t port);
+    Server(Settings);
     ~Server();
 
-    json        database;
-    std::string database_path;
+    nlohmann::json database;
+    std::string    database_path;
+
+    WorldGen world;
 
     void listen(void);
     void handle_clients(void);
-    void send_to_all(std::string message);
+    void send(RemoteClient &client, std::string descriptor, nlohmann::json message_t);
+    void send_to_all(std::string descriptor, nlohmann::json message_t);
 };

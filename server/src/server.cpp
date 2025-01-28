@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <sstream>
 
 RemoteClient::RemoteClient(TCPsocket socket, IPaddress address) :
@@ -9,7 +11,7 @@ RemoteClient::RemoteClient(TCPsocket socket, IPaddress address) :
     address(address),
     connected(true) {}
 
-Server::Server(uint16_t port) : port(port) {
+Server::Server(Settings st) : port(st.server.port) {
     if (SDLNet_Init() < 0) exit_failure("Failure to initialize SDL_net");
 
     /* Resolving the host using NULL make network interface to listen */
@@ -25,7 +27,7 @@ Server::Server(uint16_t port) : port(port) {
         try {
             database_file >> database;
             std::clog << "Loaded database from " << database_path << std::endl;
-        } catch (json::parse_error &e) {
+        } catch (nlohmann::json::parse_error &e) {
             std::cerr << "Failed to parse database: " << e.what() << std::endl;
             std::exit(EXIT_FAILURE);
         }
@@ -33,7 +35,8 @@ Server::Server(uint16_t port) : port(port) {
     } else {
         std::clog << database_path << " doesn't exist. Creating new database." << std::endl;
         database = {
-            {"players", json::array()},
+            {"players",                 nlohmann::json::array()},
+            {  "world", {{"map_data", nlohmann::json::array()}}},
         };
         std::ofstream new_file(database_path);
         new_file << database.dump(4);
@@ -41,6 +44,7 @@ Server::Server(uint16_t port) : port(port) {
         std::clog << "Created new database at " << database_path << std::endl;
     }
 
+    world   = WorldGen(st, database);
     running = true;
 }
 
@@ -70,7 +74,7 @@ void Server::handle_clients() {
     // Listen for incoming messages from clients
     for (RemoteClient &client : client_connections) {
         if (SDLNet_SocketReady(client.socket)) {
-            std::vector<char> buffer(4096);
+            static std::vector<char> buffer(65536);
             size_t bytes_received = SDLNet_TCP_Recv(client.socket, buffer.data(), buffer.size());
 
             if (bytes_received > 0 && bytes_received < buffer.size()) {
@@ -79,7 +83,18 @@ void Server::handle_clients() {
                 std::vector<std::string> messages;
 
                 while (std::getline(message_stream, message, '\n')) {
-                    std::clog << "Client says: " << message << std::endl;
+                    nlohmann::json message_t = nlohmann::json::parse(message);
+                    if (message_t.contains("fetch")) {
+                        if (message_t["fetch"] == "world") {
+                            std::clog << "Client requested world data" << std::endl;
+                            send(client, "world", database["world"]);
+                        } else {
+                            std::cerr << "Invalid fetch request" << std::endl;
+                            std::cout << message_t["fetch"] << std::endl;
+                        }
+                    } else {
+                        std::clog << "Received message from client: " << message << std::endl;
+                    }
                 }
             } else {
                 client.connected = false;
@@ -96,8 +111,6 @@ void Server::handle_clients() {
                       << client.address.port << std::endl;
         return !client.connected;
     });
-
-    // send_to_all(database.dump());
 }
 
 void Server::listen() {
@@ -124,13 +137,19 @@ void Server::listen() {
     }
 }
 
-void Server::send_to_all(std::string message) {
+void Server::send(RemoteClient &client, std::string descriptor, nlohmann::json message_t) {
+    message_t["descriptor"] = descriptor;
+    std::string message     = message_t.dump();
     message += "\n";
-    for (RemoteClient &client : client_connections) {
-        std::clog << "Sending to client: " << message << std::endl;
-        if (SDLNet_TCP_Send(client.socket, message.c_str(), message.length()) < message.length())
-            std::cerr << "Failed to send message" << std::endl;
-    }
+
+    std::cout << "Sending message: " << message_t.dump(4) << std::endl;
+
+    if (SDLNet_TCP_Send(client.socket, message.c_str(), message.length()) < message.length())
+        std::cerr << "Failed to send message" << std::endl;
+}
+
+void Server::send_to_all(std::string descriptor, nlohmann::json message_t) {
+    for (RemoteClient &client : client_connections) { send(client, descriptor, message_t); }
 }
 
 void Server::new_client(TCPsocket client_socket, IPaddress client_address) {

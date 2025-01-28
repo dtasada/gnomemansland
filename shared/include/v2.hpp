@@ -35,7 +35,7 @@ template<typename T> struct v2 {
     operator T *() const { return new T[3]{x, y}; }
 
   public:
-    float volume() const { return x * y; }
+    float length() const { return x * y; }
 
     friend std::ostream &operator<<(std::ostream &os, const v2 &v) {
         os << "v2(" << v.x << ", " << v.y << ")";

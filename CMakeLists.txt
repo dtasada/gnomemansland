@@ -14,10 +14,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Gather source files
 file(GLOB_RECURSE CLIENT_FILES client/src/*.cpp)
 file(GLOB_RECURSE SERVER_FILES server/src/*.cpp)
+file(GLOB_RECURSE SHARED_FILES shared/src/*.cpp)
 
 # Add executables
-add_executable(client ${CLIENT_FILES})
-add_executable(server ${SERVER_FILES})
+add_executable(client ${CLIENT_FILES} ${SHARED_FILES})
+add_executable(server ${SERVER_FILES} ${SHARED_FILES})
 
 # Setup OpenMP
 function(setup_openmp target)
@@ -59,6 +60,9 @@ foreach(TARGET client server)
     setup_openmp(${TARGET})
 
     target_include_directories(${TARGET} PRIVATE
+		shared/include
+		client/include
+		server/include
         ${SDL2_INCLUDE_DIR}
         ${SDL2_image_INCLUDE_DIR}
         ${SDL2_net_INCLUDE_DIR}

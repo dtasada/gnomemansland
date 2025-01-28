@@ -3,15 +3,17 @@ resolution = [1920, 1080]
 framerate = 60
 
 [multiplayer]
-enable = false
 server_host = "127.0.0.1"
 server_port = 2000
 server_polling_interval = 10
 
 [world_generation]
-resolution = [7680, 4320]
+resolution = [10, 10]
 # seed = 53220
 octaves = 15
 persistence = 0.5
 lacunarity = 2
 frequency = 1.0
+
+[server]
+port = 2000

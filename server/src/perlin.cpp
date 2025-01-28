@@ -1,4 +1,4 @@
-#include "../include/perlin.hpp"
+#include "../include/world_gen.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -18,18 +18,18 @@ PerlinNoise::PerlinNoise(uint32_t seed) {
     p.insert(p.end(), p.begin(), p.end());
 }
 
-double PerlinNoise::fade(double t) const { return t * t * t * (t * (t * 6 - 15) + 10); }
+float PerlinNoise::fade(float t) const { return t * t * t * (t * (t * 6 - 15) + 10); }
 
-double PerlinNoise::lerp(double t, double a, double b) const { return a + t * (b - a); }
+float PerlinNoise::lerp(float t, float a, float b) const { return a + t * (b - a); }
 
-double PerlinNoise::grad(int hash, double x, double y, double z) const {
-    int    h = hash & 15;
-    double u = h < 8 ? x : y;
-    double v = h < 4 ? y : (h == 12 || h == 14 ? x : z);
+float PerlinNoise::grad(int hash, float x, float y, float z) const {
+    int   h = hash & 15;
+    float u = h < 8 ? x : y;
+    float v = h < 4 ? y : (h == 12 || h == 14 ? x : z);
     return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
 }
 
-double PerlinNoise::noise(double x, double y, double z) const {
+float PerlinNoise::noise(float x, float y, float z) const {
     int X = static_cast<int>(floor(x)) & 255;
     int Y = static_cast<int>(floor(y)) & 255;
     int Z = static_cast<int>(floor(z)) & 255;
@@ -38,9 +38,9 @@ double PerlinNoise::noise(double x, double y, double z) const {
     y -= floor(y);
     z -= floor(z);
 
-    double u = fade(x);
-    double v = fade(y);
-    double w = fade(z);
+    float u = fade(x);
+    float v = fade(y);
+    float w = fade(z);
 
     int A  = p[X] + Y;
     int AA = p[A] + Z;

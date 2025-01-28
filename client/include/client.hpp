@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../include/engine.hpp"
+#include "../../shared/include/engine.hpp"
 
+#include <nlohmann/json.hpp>
 #include <string>
 #include <thread>
+#include <vector>
 
 class Client {
-    bool connected;
-
     std::string host;
     uint16_t    port;
     uint32_t    timeout;
@@ -23,6 +23,9 @@ class Client {
   public:
     Client(Settings);
     ~Client(void);
+
+    bool                        connected;
+    std::vector<nlohmann::json> message_handles;
 
     void start(void);
     void stop(void);

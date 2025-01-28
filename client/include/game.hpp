@@ -1,13 +1,13 @@
 #pragma once
 
+#include "../../shared/include/v2.hpp"
 #include "../include/client.hpp"
-#include "../include/engine.hpp"
-#include "../include/v2.hpp"
 #include "../include/world.hpp"
 
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <string>
+#include <thread>
 
 struct Game {
     SDL_Window   *window;
@@ -15,33 +15,21 @@ struct Game {
     float         target_framerate;
     float         dt;
     bool          running;
-    bool moving;
-    v2f scroll;
+    bool          moving;
+    v2f           scroll;
 
     World    world;
     Client   client;
     Settings settings;
 
+    std::thread world_fetch_thread;
+    std::mutex  message_handle_mutex;
+
     Game(Settings);
     ~Game(void);
-};
 
-struct Sprite {
-    SDL_Texture *tex;
-    SDL_Rect     rect;
-    v2f          vel, acc;
-
-    Sprite(
-        SDL_Renderer *renderer,
-        std::string   image_path,
-        SDL_Rect      rect,
-        v2f           vel = {0, 0},
-        v2f           acc = {0, 0}
-    );
-
-    ~Sprite(void);
-
-    void copy(SDL_Renderer *);
+    void fetch_world(void);
+    void update(void);
 };
 
 int exit_failure(std::string message);

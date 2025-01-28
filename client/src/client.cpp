@@ -1,5 +1,5 @@
+#include "../../shared/include/engine.hpp"
 #include "../include/client.hpp"
-#include "../include/engine.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -11,7 +11,7 @@ Client::Client(Settings st) {
     port      = st.multiplayer.server_port;
     timeout   = st.multiplayer.server_polling_interval;
 
-    if (st.multiplayer.enable) start();
+    start();
 }
 
 Client::~Client(void) {
@@ -53,7 +53,7 @@ void Client::start(void) {
 }
 
 void Client::listen(void) {
-    std::vector<char> buffer(4096);
+    std::vector<char> buffer(65536);
 
     while (connected) {
         if (SDLNet_CheckSockets(socket_set, timeout) > 0 && SDLNet_SocketReady(socket)) {
@@ -64,9 +64,8 @@ void Client::listen(void) {
                 std::string       message;
                 std::vector<std::string> messages;
 
-                while (std::getline(message_stream, message, '\n')) {
-                    std::cout << "Server says: " << message << std::endl;
-                }
+                while (std::getline(message_stream, message, '\n'))
+                    message_handles.push_back(nlohmann::json::parse(message));
             } else {
                 std::clog << "Connection lost or error while receiving data." << std::endl;
                 connected = false;
