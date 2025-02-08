@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include <ostream>
 
@@ -47,7 +48,7 @@ template<typename T> struct v3 {
     float length() const { return x * y * z; }
 
     friend std::ostream &operator<<(std::ostream &os, const v3 &v) {
-        os << "v3(" << v.x << ", " << v.y << ", " << v.z << ")";
+        os << "v3(" << (int)v.x << ", " << (int)v.y << ", " << (int)v.z << ")";
         return os;
     }
 

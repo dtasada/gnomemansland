@@ -6,6 +6,8 @@
 #include <nlohmann/json_fwd.hpp>
 #include <sstream>
 
+#define MAX_PACKET_SIZE 64512  // 63 KB
+
 RemoteClient::RemoteClient(TCPsocket socket, IPaddress address) :
     socket(socket),
     address(address),
@@ -74,7 +76,7 @@ void Server::handle_clients() {
     // Listen for incoming messages from clients
     for (RemoteClient &client : client_connections) {
         if (SDLNet_SocketReady(client.socket)) {
-            static std::vector<char> buffer(65536);
+            static std::vector<char> buffer(MAX_PACKET_SIZE);
             size_t bytes_received = SDLNet_TCP_Recv(client.socket, buffer.data(), buffer.size());
 
             if (bytes_received > 0 && bytes_received < buffer.size()) {
@@ -87,10 +89,47 @@ void Server::handle_clients() {
                     if (message_t.contains("fetch")) {
                         if (message_t["fetch"] == "world") {
                             std::clog << "Client requested world data" << std::endl;
-                            send(client, "world", database["world"]);
+
+                            nlohmann::json current_chunk = {
+                                {"map_data", nlohmann::json::object()}
+                            };
+                            int current_chunk_index = 0;
+
+                            int height = database["world"]["map_data"].size();
+                            int width  = database["world"]["map_data"][0].size();
+                            for (int y = 0; y < height; y++) {
+                                for (int x = 0; x < width; x++) {
+                                    std::string    x_s   = std::to_string(x);
+                                    std::string    y_s   = std::to_string(y);
+                                    nlohmann::json pixel = database["world"]["map_data"][y][x];
+
+                                    current_chunk["chunk_num"] = current_chunk_index;
+
+                                    size_t pixel_size = pixel.dump().size();
+                                    size_t total_size = current_chunk.dump().size();
+
+                                    if (total_size + pixel_size < MAX_PACKET_SIZE) {
+                                        current_chunk["map_data"][y_s][x_s] = pixel;
+                                    }
+                                    if (total_size + pixel_size >= MAX_PACKET_SIZE
+                                        || (x == width - 1 && y == height - 1)) {
+                                        send(client, "world", current_chunk);
+                                        current_chunk.clear();
+                                        current_chunk_index++;
+                                    }
+                                }
+                            }
+
+                            send(
+                                client,
+                                "close_world_fetch",
+                                {
+                                    {"packet_count", current_chunk_index}
+                            }
+                            );
                         } else {
                             std::cerr << "Invalid fetch request" << std::endl;
-                            std::cout << message_t["fetch"] << std::endl;
+                            std::cerr << message_t["fetch"] << std::endl;
                         }
                     } else {
                         std::clog << "Received message from client: " << message << std::endl;
@@ -142,10 +181,12 @@ void Server::send(RemoteClient &client, std::string descriptor, nlohmann::json m
     std::string message     = message_t.dump();
     message += "\n";
 
-    std::cout << "Sending message: " << message_t.dump(4) << std::endl;
+    std::clog << "Sending message: " << message << std::endl;
+    std::cerr << "Message length: " << message.size() << std::endl;
 
-    if (SDLNet_TCP_Send(client.socket, message.c_str(), message.length()) < message.length())
+    if (SDLNet_TCP_Send(client.socket, message.c_str(), message.length()) < message.length()) {
         std::cerr << "Failed to send message" << std::endl;
+    }
 }
 
 void Server::send_to_all(std::string descriptor, nlohmann::json message_t) {

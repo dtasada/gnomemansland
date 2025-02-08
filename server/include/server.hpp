@@ -1,11 +1,11 @@
 #pragma once
 
 #if defined(__linux)
-#    include <nlohmann/json.hpp>
-#    include <SDL2/SDL_net.h>
+    #include <nlohmann/json.hpp>
+    #include <SDL2/SDL_net.h>
 #elif defined(__APPLE__) || defined(_WIN32)
-#    include <nlohmann/json.hpp>
-#    include <SDL_net.h>
+    #include <nlohmann/json.hpp>
+    #include <SDL_net.h>
 #endif
 
 #include "../include/world_gen.hpp"

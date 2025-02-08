@@ -52,24 +52,40 @@ void Game::fetch_world(void) {
         client.send(R"({"fetch":"world"})");
 
         bool handled = false;
+
+        nlohmann::json full_world = {
+            {"map_data", nlohmann::json::object()}
+        };
+        int packets_received = 0;
         while (!handled) {
             {
                 std::lock_guard<std::mutex> lock(message_handle_mutex);
 
-                std::erase_if(client.message_handles, [this, &handled](nlohmann::json handle) {
-                    if (handle["descriptor"] == "world") {
-                        world.map_data = handle["map_data"].get<std::vector<std::vector<rgb>>>();
-                        world.update_map();
-                        handled = true;
+                std::erase_if(
+                    client.message_handles,
+                    [this, &handled, &full_world, &packets_received](nlohmann::json handle) {
+                        if (handle["descriptor"] == "world") {
+                            full_world["map_data"].update(handle["map_data"]);
+                            packets_received++;
+                            return true;
+                        } else if (handle["descriptor"] == "close_world_fetch") {
+                            if ((int)handle["packet_count"] == packets_received) {
+                                handled = true;
+                                return true;
+                            }
+                        }
+
+                        return false;
                     }
-                    return handled;
-                });
+                );
             }
 
             std::this_thread::sleep_for(
                 std::chrono::milliseconds(settings.multiplayer.server_polling_interval)
             );
         }
+
+        world.update_map(full_world["map_data"]);
     });
 }
 

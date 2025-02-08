@@ -1,6 +1,5 @@
+#include "../../shared/include/engine.hpp"
 #include "../include/sprite.hpp"
-
-#include <SDL2/SDL_image.h>
 
 Sprite::Sprite(SDL_Renderer *renderer, std::string image_path, SDL_Rect rect, v2f vel, v2f acc) :
     rect(rect),

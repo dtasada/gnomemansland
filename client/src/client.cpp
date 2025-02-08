@@ -53,7 +53,7 @@ void Client::start(void) {
 }
 
 void Client::listen(void) {
-    std::vector<char> buffer(65536);
+    std::vector<char> buffer(65535);
 
     while (connected) {
         if (SDLNet_CheckSockets(socket_set, timeout) > 0 && SDLNet_SocketReady(socket)) {

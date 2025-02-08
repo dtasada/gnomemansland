@@ -25,5 +25,5 @@ class World {
     SDL_Rect      rect;
 
     void draw(v2f scroll);
-    void update_map();
+    void update_map(nlohmann::json new_map_data);
 };
